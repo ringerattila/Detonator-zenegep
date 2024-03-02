@@ -150,44 +150,44 @@ Setup memoria kezdete, a byte-ok sorrendje: CH1, CH2, CH3, CH4, CH5
 
 
 	Zárások területe 8 byte zárásonként: 2 byte dátum, 6 byte: 30 bit hosszu számláló, 18 bit rövid számláló
-	24 db z�r�s, �sszesen 192 byte
+	24 db zárás, összesen 192 byte
 
-48 -  239 c�meken a 24 db z�r�s
+48 -  239 címeken a 24 db zárás
 
-240 - 4 byte hosszu sz�ml�l� aktu�lis �ll�sa
-244 - 4 byte r�vid sz�ml�l� aktu�lis �ll�sa
+240 - 4 byte hosszu számláló aaktuális állása
+244 - 4 byte rövid számláló aaktuális állása
 248 - Pass_Ptr
-249 - �res
-250	 - 3*2 byte t�rolt jelsz�
+249 - üres
+250	 - 3*2 byte tárolt jelszó
 
 */
 
 // #define setup_addr  		16; // seetup adathalmaz kezdete az EEPROM-ban
-// #define setup_size 		26; // ennyi byte-b�l �ll a setup adathalmaz
+// #define setup_size 		26; // ennyi byte-ból áll a setup adathalmaz
 
 const unsigned char counter1_addr = 240;
 const unsigned char counter2_addr = 0;
 const unsigned char counter3_addr = 8;
-const unsigned char pass_area = 250;			// Pass ter�let kezdete
-const unsigned char EEChkAddr = 43;			// Chip els� fut�s�t ellen�rz� byte c�me
+const unsigned char pass_area = 250;			// Pass terület kezdete
+const unsigned char EEChkAddr = 43;			// Chip első futását ellenőrző byte címe
 const unsigned char passptr_addr = 248;			// Pass pointer cime
 const unsigned char setup_addr = 16;
 const unsigned char setup_size = 26;
-const unsigned char setup_credits_addr = 40;		// Erre a cimre kell irni a g�pben l�v� krediteket
-const unsigned char booking_addr = 48;		// EEPROM-ban a k�nyvel�s ter�let kezdete
-const unsigned char last_booking_addr = 232;		// EEPROM-ban a z�r�s ter�let utols� rekord kezd�cime
-const unsigned char BKPointer = 42;		// EEPROM-ban a k�vetkez� z�r�s kezd�cime
-const unsigned int	Money_Val[] = { 0, 1, 2, 5, 10, 20, 50, 100, 200, 500 };	// �rmevizsg�l� p�nz�rt�kek
-const unsigned int PrellDelay = 15;	// prell mentes�t�shez ennyi ms-t v�runk
+const unsigned char setup_credits_addr = 40;		// Erre a cimre kell irni a gépben lévő krediteket
+const unsigned char booking_addr = 48;		// EEPROM-ban a könyvelés terület kezdete
+const unsigned char last_booking_addr = 232;		// EEPROM-ban a zárás terület utolsó rekord kezdőcime
+const unsigned char BKPointer = 42;		// EEPROM-ban a következő zárás kezdőcime
+const unsigned int	Money_Val[] = { 0, 1, 2, 5, 10, 20, 50, 100, 200, 500 };	// érmevizsgáló pénzértékek
+const unsigned int PrellDelay = 15;	// prell mentesítéshez ennyi ms-t várunk
 
 /****************************************************************
-*	T�vvez�rl� ism�tl�si ciklus
-* El�sz�r 0-r�l kell a RMC_First �rt�ket el�rni
-* Az ism�tl�sekhez pedig az RMC_Repeat-r�l kell az RMC_First �rt�ket el�rni
+*	Távvezérlő ismétlési ciklus
+* Először 0-ról kell a RMC_First értéket elérni
+* Az ismétlésekhez pedig az RMC_Repeat-ről kell az RMC_First értéket elérni
 *****************************************************************************************/
-const unsigned int RMC_First = 800;		// t�vvez�rl� ism�tl�si ciklus - els� nyom�s k�sleltet�se
-const unsigned int RMC_Repeat = 500;		// t�vvez�rl� ism�tl�si ciklus - ism�tl�si gyorsas�g (First-Repeat)
-const unsigned int Button_Repeat = 650;		// lapoz� nyom�gomb ism�tl�d�si sebess�g
+const unsigned int RMC_First = 800;		// távvezérlő ismétlési ciklus - első nyomás késleltetése
+const unsigned int RMC_Repeat = 500;		// távvezérlő ismétlési ciklus - ismétlési gyorsaság (First-Repeat)
+const unsigned int Button_Repeat = 650;		// lapozó nyomógomb ismétlődési sebesség
 
 const unsigned char ctmp[] = "0123456789";
 // const unsigned char mess2[] = "0123456789ABCDEFGHIJKLMNO";
@@ -197,94 +197,94 @@ const unsigned char scode[] = "45411496v7.12";  // service code
 
 #define	reset_vector	0x00	// reset vektor
 
-// #define	m_kikap_en	0x081	// kikapcsol�s megerositese (PC adja)
-// #define	m_kikap_tilt	0x082	// kikapcsol�si k�relem elutas�t�sa
-// #define	m_shut_req	0x083	// kikapcsol�si k�relem KI gombbal
+// #define	m_kikap_en	0x081	// kikapcsolós megerositese (PC adja)
+// #define	m_kikap_tilt	0x082	// kikapcsolósi kérelem elutasítása
+// #define	m_shut_req	0x083	// kikapcsolósi kérelem KI gombbal
 
 
-// ellen�rz�tt, j� �zenet k�dok
+// ellenőrzőtt, jó üzenet kódok
 
-#define	m_booking_rq				'z'		// setup adathalmaz k�r�se
-#define	m_booking_send			'Z'		// setup adathalmaz k�r�se
+#define	m_booking_rq				'z'		// setup adathalmaz kérése
+#define	m_booking_send			'Z'		// setup adathalmaz kérése
 
-#define	m_login					'i'		// PC bejelentkez�se bekapcsol�s ut�n
-#define	m_startup				'I'		// 'I' - inicialiu�l� �zenet
+#define	m_login					'i'		// PC bejelentkezése bekapcsolós után
+#define	m_startup				'I'		// 'I' - inicializáló üzenet
 
 #define	m_space					' '		// Szokoz karakter
 
-#define	m_ch1_Pressed			'a'		// 0x041	// 'A' - �rme a ch1 csatorn�n  (HW adja)
-#define	m_ch1_Released			'A'		// 0x041	// 'A' - �rme a ch1 csatorn�n  (HW adja)
+#define	m_ch1_Pressed			'a'		// 0x041	// 'A' - érme a ch1 csatornán  (HW adja)
+#define	m_ch1_Released			'A'		// 0x041	// 'A' - érme a ch1 csatornán  (HW adja)
 
-#define	m_ch2_Pressed			'b'		//0x042	// 'B' - �rme a ch2 csatorn�n  (HW adja)
-#define	m_ch2_Released			'B'		//0x042	// 'B' - �rme a ch2 csatorn�n  (HW adja)
+#define	m_ch2_Pressed			'b'		//0x042	// 'B' - érme a ch2 csatornán  (HW adja)
+#define	m_ch2_Released			'B'		//0x042	// 'B' - érme a ch2 csatornán  (HW adja)
 
-#define	m_ch3_Pressed			'c'		// 0x043	// 'C' - �rme a ch3 csatorn�n  (HW adja)
-#define	m_ch3_Released			'C'		// 0x043	// 'C' - �rme a ch3 csatorn�n  (HW adja)
+#define	m_ch3_Pressed			'c'		// 0x043	// 'C' - érme a ch3 csatornán  (HW adja)
+#define	m_ch3_Released			'C'		// 0x043	// 'C' - érme a ch3 csatornán  (HW adja)
 
-#define	m_ch4_Pressed			'd'		//0x044	// 'D' - �rme a ch4 csatorn�n  (HW adja)
-#define	m_ch4_Released			'D'		//0x044	// 'D' - �rme a ch4 csatorn�n  (HW adja)
+#define	m_ch4_Pressed			'd'		//0x044	// 'D' - érme a ch4 csatornán  (HW adja)
+#define	m_ch4_Released			'D'		//0x044	// 'D' - érme a ch4 csatornán  (HW adja)
 
-#define	m_ch5_Pressed			'e'		//0x045	// 'E' - �rme a ch5 csatorn�n  (HW adja)
-#define	m_ch5_Released			'E'		//0x045	// 'E' - �rme a ch5 csatorn�n  (HW adja)
+#define	m_ch5_Pressed			'e'		//0x045	// 'E' - érme a ch5 csatornán  (HW adja)
+#define	m_ch5_Released			'E'		//0x045	// 'E' - érme a ch5 csatornán  (HW adja)
 
-#define	m_ch6_Pressed			'f'		//0x046	// 'F' - �rme a ch6 csatorn�n  (HW adja)
-#define	m_ch6_Released			'F'		//0x046	// 'F' - �rme a ch6 csatorn�n  (HW adja)
+#define	m_ch6_Pressed			'f'		//0x046	// 'F' - érme a ch6 csatornán  (HW adja)
+#define	m_ch6_Released			'F'		//0x046	// 'F' - érme a ch6 csatornán  (HW adja)
 
-#define	m_counters_rq			'g'		// setup adathalmaz k�r�se
-#define	m_counters_send			'G'		// setup adathalmaz k�r�se
+#define	m_counters_rq			'g'		// setup adathalmaz kérése
+#define	m_counters_send			'G'		// setup adathalmaz kérése
 
-#define	m_setup_rq				'h'		// setup adathalmaz k�r�se
-#define	m_setup_send			'H'		// setup adathalmaz k�ld�se
+#define	m_setup_rq				'h'		// setup adathalmaz kérése
+#define	m_setup_send			'H'		// setup adathalmaz küldése
 
-#define	m_Vol_Pressed			'p'		// �rmeajt� kinyitva �zenet -  belepes hangero allito modba
-#define	m_Vol_Released			'P'		// �rmeajt� bez�rva	�zenet
+#define	m_Vol_Pressed			'p'		// érmeajtó kinyitva üzenet -  belepes hangero allito modba
+#define	m_Vol_Released			'P'		// érmeajtó bezárva	üzenet
 
-#define	m_Service_Pressed		's'		// kulcsos kapcsol� elforditva	-  bel�p�ps service modba
-#define	m_Service_Released		'S'		// kulcsos kapcsol� elengedve
+#define	m_Service_Pressed		's'		// kulcsos kapcsoló elforditva	-  belépés service modba
+#define	m_Service_Released		'S'		// kulcsos kapcsoló elengedve
 
-#define	m_mute_on				'u'		// A PC k�ri a n�mit�s bekapcsol�s�t
-#define	m_mute_off				'U'		// A PC k�ri a n�mit�s kikapcsol�s�t
+#define	m_mute_on				'u'		// A PC kéri a némítás bekapcsolását
+#define	m_mute_off				'U'		// A PC kéri a némítás kikapcsolását
 
-#define	m_SLeft_Pressed			'w'		// Step_Left nyom�gomb   megnyomva
-#define	m_SLeft_Released			'W'		// Step_Left nyom�gomb   elengedve
+#define	m_SLeft_Pressed			'w'		// Step_Left nyomógomb   megnyomva
+#define	m_SLeft_Released			'W'		// Step_Left nyomógomb   elengedve
 
-#define	m_SRight_Pressed			'o'		// Step_Right nyom�gomb megnyomva
-#define	m_SRight_Released		'O'		// Step_Right nyom�gomb  elengedve
+#define	m_SRight_Pressed			'o'		// Step_Right nyomógomb megnyomva
+#define	m_SRight_Released		'O'		// Step_Right nyomógomb  elengedve
 
-#define	m_GBack_Pressed			'v'		// Go_Back nyom�gomb megnyomva
-#define	m_GBack_Released		'V'		// Go_Back nyom�gomb  elengedve
+#define	m_GBack_Pressed			'v'		// Go_Back nyomógomb megnyomva
+#define	m_GBack_Released		'V'		// Go_Back nyomógomb  elengedve
 
-#define	m_GEnter_Pressed			'y'		// Go_Enter nyom�gomb megnyomva
-#define	m_GEnter_Released		'Y'		// Go_Enter nyom�gomb  elengedve
+#define	m_GEnter_Pressed			'y'		// Go_Enter nyomógomb megnyomva
+#define	m_GEnter_Released		'Y'		// Go_Enter nyomógomb  elengedve
 
-#define	m_test_on				'X'		// A PC teszt m�dba l�pett (nem sz�moljuk a p�nzt)Go_Enter nyom�gomb megnyomva
-#define	m_test_off				'x'		// A PC kil�pett a teszt m�db�l 
+#define	m_test_on				'X'		// A PC teszt módba lépett (nem számoljuk a pénzt)Go_Enter nyomógomb megnyomva
+#define	m_test_off				'x'		// A PC kilépett a teszt módból 
 
-#define	m_PLeft_Pressed			'j'		// Page_Left nyom�gomb  (HW adja)
-#define	m_PLeft_Released			'J'		// Page_Left nyom�gomb  (HW adja)
+#define	m_PLeft_Pressed			'j'		// Page_Left nyomógomb  (HW adja)
+#define	m_PLeft_Released			'J'		// Page_Left nyomógomb  (HW adja)
 
 #define	m_PRight_Pressed			't'
 #define	m_PRight_Released		'T'
 
-#define	m_Volmut_Pressed			'k'		// volume mute t�vvez�rl�r�l
-#define	m_Volmut_Released		'K'		// volume mute t�vvez�rl�r�l
+#define	m_Volmut_Pressed			'k'		// volume mute távvezérlőről
+#define	m_Volmut_Released		'K'		// volume mute távvezérlőről
 
-#define	m_Volup_Pressed			'l'		// volume up t�vvez�rl�r�l
-#define	m_Volup_Released			'L'		// volume up t�vvez�rl�r�l
+#define	m_Volup_Pressed			'l'		// volume up távvezérlőről
+#define	m_Volup_Released			'L'		// volume up távvezérlőről
 
-#define	m_Voldn_Pressed			'm'		// volume down t�vvez�rl� gomb megnyomva
-#define	m_Voldn_Released			'M'		// volume down t�vvez�rl� gomb elengedve
+#define	m_Voldn_Pressed			'm'		// volume down távvezérlő gomb megnyomva
+#define	m_Voldn_Released			'M'		// volume down távvezérlő gomb elengedve
 
-#define	m_vol4b_Pressed			'n'		// t�vvez�rl� 4. gomb
-#define	m_vol4b_Released			'N'		// t�vvez�rl� 4. gomb
+#define	m_vol4b_Pressed			'n'		// távvezérlő 4. gomb
+#define	m_vol4b_Released			'N'		// távvezérlő 4. gomb
 
-#define	m_counter_reset			'@'		// k�r�s sz�ml�l�k null�z�s�ra
-#define	m_remote_credit			'#'		// t�vvez�rl�vel beadott kredit remote free m�dban
+#define	m_counter_reset			'@'		// kérés számlálók nullázására
+#define	m_remote_credit			'#'		// távvezérlővel beadott kredit remote free módban
 
-#define	m_shutdown_rq			'q'		// kikapcsol�s jelz�se (HW adja)
-#define	m_shutdown				'Q'		// kikapcsol�s jelz�se (HW adja)
+#define	m_shutdown_rq			'q'		// kikapcsolós jelzése (HW adja)
+#define	m_shutdown				'Q'		// kikapcsolós jelzése (HW adja)
 
-#define	m_errmsg				'%'		// kikapcsol�s jelz�se (HW adja)
+#define	m_errmsg				'%'		// kikapcsolós jelzése (HW adja)
 
 //**********************************************************
 // ASCII characters
@@ -314,17 +314,17 @@ const unsigned char scode[] = "45411496v7.12";  // service code
 
 #define		b_dip		RA0// IN1 - csoport bemenet
 #define		b_but		RA1// IN2 - ra.1, nyomogombok bemenete
-#define		b_vol		RA1// IN2 - ra.1, kapcsolo-csatorn�n j�n ez is
+#define		b_vol		RA1// IN2 - ra.1, kapcsolo-csatornán jön ez is
 #define		b_serv		RA1// service mod kapcsolo bemenet
 #define		b_erm		RA5// IN3 - csoport bemenet
 
 #define		b_kibe		RB0//
 
-#define		oatxst		RC0		// r�gi hardver ATX kimenete
-#define		opctap		RC4 		// r�gi hardver PCTAP kimenete
+#define		oatxst		RC0		// régi hardver ATX kimenete
+#define		opctap		RC4 		// régi hardver PCTAP kimenete
 
 
-#ifdef DEBUG  // DEBUG eset�n RB7, RB6 foglalt
+#ifdef DEBUG  // DEBUG esetén RB7, RB6 foglalt
 	#define		atxst		RC0
 	#define		pctap		RB5 // RB7-en lenne, a debugger miatt van itt
 
@@ -340,33 +340,33 @@ const unsigned char scode[] = "45411496v7.12";  // service code
 #define		DAT			RA4
 #define		CL1			RA2
 #define		CL2			RC2
-#define		SCL			RC3		// I2C busz �rajel
-#define		OK12V		RC5		// PC t�p jele
+#define		SCL			RC3		// I2C busz órajel
+#define		OK12V		RC5		// PC táp jele
 
-#define		OA0			RB0		// r�gi vez�rl� cimz�se
-#define		OA1			RB1		// r�gi vez�rl� cimz�se
-#define		OA2			RB2		// r�gi vez�rl� cimz�se
-#define		ODAT		RB4		// r�gi vez�rl� cimz�se
-#define		OCL1		RB3		// r�gi vez�rl� cimz�se
-#define		ORST		RB5		// r�gi vez�rl� cimz�se   most m�sra haszn�ljuk
-#define		OIN1		RA0		// r�gi vez�rl� bemenet csoport v�laszt�s
-#define		OIN2		RA1		// r�gi vez�rl� bemenet csoport v�laszt�s
+#define		OA0			RB0		// régi vezérlő címzése
+#define		OA1			RB1		// régi vezérlő címzése
+#define		OA2			RB2		// régi vezérlő címzése
+#define		ODAT		RB4		// régi vezérlő címzése
+#define		OCL1		RB3		// régi vezérlő címzése
+#define		ORST		RB5		// régi vezérlő címzése   most másra használjuk
+#define		OIN1		RA0		// régi vezérlő bemenet csoport választás
+#define		OIN2		RA1		// régi vezérlő bemenet csoport választás
 
 #define _BufferOverrun	COM_Flags,0 // buffer overrun
 
-// hanger� t�vir. gombjai
+// hangerő távir. gombjai
 #define		rem_mut		RB4//
 #define		rem_up		RB3// RA bit5
 #define		rem_dn		RB2// RB bit7
 
 //**********************************************************
-// Konstansok defini�l�sa
+// Konstansok definiálása
 //**********************************************************
 
 // const unsigned long servcode @ 0x1EF0 = 0x19783456; 
 
 //**********************************************************
-// V�ltozok defini�l�sa
+// Változók definiálása
 //**********************************************************
 
 // unsigned char rx_k;
@@ -376,17 +376,17 @@ typedef unsigned long DWORD;
 typedef	enum	{ ok, serv, error, off }	BP_TYPE;
 BP_TYPE		beep_type;
 
-union	DateStore		// k�nyvel�si adatok k�ld�si form�tuma
+union	DateStore		// könyvelési adatok küldési formátuma
 {
 	unsigned int Zipped;
 	struct
 	{
-	unsigned char	DLSB;				// �sszesen k�t byte-on a d�tum
+	unsigned char	DLSB;				// összesen két byte-on a dátum
 	unsigned char	DMSB;				//
 	};
 }
 
-union	DateStore Date_Store;					// t�m�ritett d�tum form�tum
+union	DateStore Date_Store;					// tömöritett dátum formátum
 
 // union	BookSend	Book_Send;	// 
 
@@ -419,13 +419,13 @@ union	bignum
 	};
 	struct
 	{
-	unsigned char  cnumbyte[8];		// Hozz�f�r�s ciklusszervez�ssel
+	unsigned char  cnumbyte[8];		// Hozzáférés ciklusszervezéssel
 	};
 
 };
 
 union	bignum	Counter, Counter2, Counter3, Booking_Counter;
-//, Book_Send;	// sz�ml�l� �ll�s t�rol�sa
+//, Book_Send;	// számláló állás tárolása
 
  
   union tVALTOZObits
@@ -433,54 +433,54 @@ union	bignum	Counter, Counter2, Counter3, Booking_Counter;
        unsigned char x;
       struct {
           unsigned In_Msg: 1;
-          unsigned Normal_Switchoff: 1;    		// =1, ha a PC mag�t�l �llt le, =0, ha nem tud kikapcsolni
-          unsigned Long_Switchoff: 1;			// =1, ha hosszabb id� m�lva kapcsoljuk ki a PC-t (XP)     
+          unsigned Normal_Switchoff: 1;    		// =1, ha a PC magától állt le, =0, ha nem tud kikapcsolni
+          unsigned Long_Switchoff: 1;			// =1, ha hosszabb idő múlva kapcsoljuk ki a PC-t (XP)     
           unsigned Monitor_Always_On: 1;		// =1, ha a monitort azonnal be kell kapcsolni
-          unsigned Remote_2ch: 1;			// =1, ha k�tcsatorn�s t�vvez�rl� van a g�phez
-          unsigned Clear_Credit: 1;			// =1, ha t�r�lni kell a krediteket (�zenet 'C' legyen, ha kell t�r�lni, 'N' legyen, ha nem)
-          unsigned Keyboard_Enable: 1;		// =1, ha a keyboard enged�lyezve van ('K' legyen, ha haszn�lhat� a bill., 'N', ha nem)
+          unsigned Remote_2ch: 1;			// =1, ha kétcsatornás távvezérlő van a géphez
+          unsigned Clear_Credit: 1;			// =1, ha törölni kell a krediteket (üzenet 'C' legyen, ha kell törölni, 'N' legyen, ha nem)
+          unsigned Keyboard_Enable: 1;		// =1, ha a keyboard engedélyezve van ('K' legyen, ha használható a bill., 'N', ha nem)
           unsigned Remote_Present:1;
      	 };
         };
   
 //   #define tVALTOZO tVALTOZObits.x
 
-union tVALTOZObits SFbits; //P�ld�nyos�t�s
+union tVALTOZObits SFbits; //Példányosítás
 
 
 union ErmeBits
 {
        unsigned char x;
       struct {
-          unsigned CH1: 1;			// =1, ha a CH1 csatorna �ppen p�nzt vesz
-          unsigned CH2: 1;    		// =1, ha a CH2 csatorna �ppen p�nzt vesz
-          unsigned CH3: 1;			// =1, ha a CH3 csatorna �ppen p�nzt vesz
-          unsigned CH4: 1;			// =1, ha a CH4 csatorna �ppen p�nzt vesz
-          unsigned CH5: 1;			// =1, ha a CH5 csatorna �ppen p�nzt vesz
-          unsigned CH6: 1;			// =1, ha a CH6 csatorna �ppen p�nzt vesz
-          unsigned Serv_Mode: 1;	//  =1, ha a kulcsos kapcsol� el van forditva
-          unsigned Erme_Ajto:1;		// =1, ha az �rmeajt� nyitva van
+          unsigned CH1: 1;			// =1, ha a CH1 csatorna éppen pénzt vesz
+          unsigned CH2: 1;    		// =1, ha a CH2 csatorna éppen pénzt vesz
+          unsigned CH3: 1;			// =1, ha a CH3 csatorna éppen pénzt vesz
+          unsigned CH4: 1;			// =1, ha a CH4 csatorna éppen pénzt vesz
+          unsigned CH5: 1;			// =1, ha a CH5 csatorna éppen pénzt vesz
+          unsigned CH6: 1;			// =1, ha a CH6 csatorna éppen pénzt vesz
+          unsigned Serv_Mode: 1;	//  =1, ha a kulcsos kapcsoló el van forditva
+          unsigned Erme_Ajto:1;		// =1, ha az érmeajtó nyitva van
      	 };
         };
 
-union ErmeBits ERMbits = 0; //P�ld�nyos�t�s
+union ErmeBits ERMbits = 0; //Példányosítás
 
    union ButBits
 {
        unsigned char x;
       struct {
-          unsigned Page_Left: 1;			// =1, ha a Page_Left gombot �ppen nyomj�k
-          unsigned Step_Left: 1;    		// =1, ha a Step_Left gombot �ppen nyomj�k
-          unsigned Return: 1;			// =1, ha a Return gombot �ppen nyomj�k
-          unsigned Enter: 1;				// =1, ha a Enter gombot �ppen nyomj�k
-          unsigned Step_Right: 1;		// =1, ha a Step_Right gombot �ppen nyomj�k
-          unsigned Page_Right: 1;		// =1, ha a Page_Right gombot �ppen nyomj�k
-          unsigned Ki_Be: 1;			//  =1, ha a Ki-Be gombot �ppen nyomj�k
-          unsigned Chip_First_Run:1;		// =1, ha a chip (PIC) el�sz�r fut
+          unsigned Page_Left: 1;			// =1, ha a Page_Left gombot éppen nyomják
+          unsigned Step_Left: 1;    		// =1, ha a Step_Left gombot éppen nyomják
+          unsigned Return: 1;			// =1, ha a Return gombot éppen nyomják
+          unsigned Enter: 1;				// =1, ha a Enter gombot éppen nyomják
+          unsigned Step_Right: 1;		// =1, ha a Step_Right gombot éppen nyomják
+          unsigned Page_Right: 1;		// =1, ha a Page_Right gombot éppen nyomják
+          unsigned Ki_Be: 1;			//  =1, ha a Ki-Be gombot éppen nyomják
+          unsigned Chip_First_Run:1;		// =1, ha a chip (PIC) először fut
      	 };
         };
 
-union ButBits BUTbits = 0; 	// P�ld�nyos�t�s - 
+union ButBits BUTbits = 0; 	// Példányosítás - 
 
    union BadButBits
 {
@@ -493,30 +493,30 @@ union ButBits BUTbits = 0; 	// P�ld�nyos�t�s -
           unsigned Step_Right: 1;		// =1, ha a Step_Right gomb be van ragadva
           unsigned Page_Right: 1;		// =1, ha a Page_Right gomb be van ragadva
           unsigned MuteOff: 1;			//  =1, ha ujra szoljon az erosito
-          unsigned t2ch:1;				// csak debug, jelezz�k, hogy 2 csatorn�s a t�vvez.
+          unsigned t2ch:1;				// csak debug, jelezzük, hogy 2 csatornás a távvez.
      	 };
         };
 
 
-union BadButBits BadButBits = 0; 	// P�ld�nyos�t�s - 
+union BadButBits BadButBits = 0; 	// Példányosítás - 
 
 
   union TVBits
 {
        unsigned char x;
       struct {
-          unsigned Mute: 1;			// =1, ha a TV0 gombj�t �ppen nyomj�k
-          unsigned Volup: 1;    		// =1, ha a TV1 gombj�t �ppen nyomj�k
-          unsigned Voldn: 1;		// =1, ha a TV2 gombj�t �ppen nyomj�k
-          unsigned Vol4b: 1;		// =1, ha a TV3 gombj�t �ppen nyomj�k
-          unsigned Fb4: 1;			// Nem haszn�lt
-          unsigned PC_Test_Mode: 1;			// =1, ha a PC teszt m�dban van
-          unsigned PC_On: 1;			// =1, ha a PC bejelentkezett, �s kezdodik az adatcsere
-          unsigned PC_Logged:1;			// =1, ha a PC bejelentkez�s�t elfogadtuk
+          unsigned Mute: 1;			// =1, ha a TV0 gombját éppen nyomják
+          unsigned Volup: 1;    		// =1, ha a TV1 gombját éppen nyomják
+          unsigned Voldn: 1;		// =1, ha a TV2 gombját éppen nyomják
+          unsigned Vol4b: 1;		// =1, ha a TV3 gombját éppen nyomják
+          unsigned Fb4: 1;			// Nem használt
+          unsigned PC_Test_Mode: 1;			// =1, ha a PC teszt módban van
+          unsigned PC_On: 1;			// =1, ha a PC bejelentkezett, és kezdodik az adatcsere
+          unsigned PC_Logged:1;			// =1, ha a PC bejelentkezését elfogadtuk
      	 };
         };
   
-union	TVBits TVbits = 0; //P�ld�nyos�t�s
+union	TVBits TVbits = 0; //Példányosítás
 
 
  //        if(VALTOZObits.Fb0)
@@ -530,37 +530,37 @@ union	TVBits TVbits = 0; //P�ld�nyos�t�s
 //**********************************************************
 
 #define  SER_BUFFER_SIZE 	64		// 64 byte-os a puffer
-#define  SER_FIFO_MASK  (SER_BUFFER_SIZE-1)   // k�rbefordul�s kezel�s�re
+#define  SER_FIFO_MASK  (SER_BUFFER_SIZE-1)   // körbefordulás kezelésére
 
 unsigned char rxtim=2;			// timeout
 // soros port pufferek
 unsigned char rxfifo[SER_BUFFER_SIZE];
 unsigned char rxiptr, rxoptr;
-unsigned char RX_Msg;				// soros v�teli pufferbe be�rkezett, fel nem dolgozott �zenetek sz�ma
+unsigned char RX_Msg;				// soros vételi pufferbe beérkezett, fel nem dolgozott üzenetek száma
 // unsigned char txfifo[SER_BUFFER_SIZE];
 unsigned char txiptr, txoptr;
 // volatile unsigned char hww;
 unsigned char ser2_tmp;
-unsigned char RX_Char;			// be�rkezett karakter
+unsigned char RX_Char;			// beérkezett karakter
 // unsigned int tomb[20];
-// unsigned char mess[32];	// kimeno uzenet t�rol�s�ra
-unsigned char DateStr[6] = {'0', '0', '1', '2', '3','1'};	// ASCII d�tum form�tum
-unsigned char Cmd;		// bej�v� �zenet parancsk�dja
-// unsigned int DateZipped;	// T�moritett d�tum form�tum
+// unsigned char mess[32];	// kimeno uzenet tárolására
+unsigned char DateStr[6] = {'0', '0', '1', '2', '3','1'};	// ASCII dátum form�tum
+unsigned char Cmd;		// bejövő üzenet parancskódja
+// unsigned int DateZipped;	// T�moritett dátum form�tum
 
 
-unsigned char	local_CLC ;		// �zenet k�ld�shez
-int	dcmut;					// ciklusv�ltoz� - el�jeles legyen!!
-unsigned char  bnum;			// seg�dv�ltoz� k�nyvel�s k�ld�shez
+unsigned char	local_CLC ;		// üzenet küldéshez
+int	dcmut;					// ciklusváltozó - előjeles legyen!!
+unsigned char  bnum;			// segédváltozó könyvelés küldéshez
 unsigned char RH, Chk;			// Booking_ segedvaltozok
-unsigned long mpl;				// ASCII konverzi�hoz szorz� �rt�k
-unsigned int	RM_Count;		// t�vvez�rl� folyamatos nyomva tart�s�nak sz�ml�l�ja
-unsigned  int	CH_Money[7];		// �rmecsatorn�khoz tartoz� p�nz�rt�k
+unsigned long mpl;				// ASCII konverzióhoz szorzó érték
+unsigned int	RM_Count;		// távvezérlő folyamatos nyomva tartásának számlálója
+unsigned  int	CH_Money[7];		// érmecsatornákhoz tartozó pénzérték
 unsigned  int	CR_Pass;		// Counter_Reset Passsword
-unsigned long CR_Mpl;			// Counter Reset seg�dsz�ml�l�
-unsigned char  eeprom_irhato = 0;			// = 1, ha enged�lyezz�k az eeprom ir�st, biztons�gi v�ltoz�
-unsigned char  Wrts;			// EEPROM ir�s hibajelz�se: 0 eset�n nincs hiba
-unsigned char  ForcedMuteOff = 0;		// Er�ltetett mute_off szakadt �zenet eset�re
+unsigned long CR_Mpl;			// Counter Reset segédszámláló
+unsigned char  eeprom_irhato = 0;			// = 1, ha engedélyezzük az eeprom irást, biztonsági változó
+unsigned char  Wrts;			// EEPROM írás hibajelzése: 0 esetén nincs hiba
+unsigned char  ForcedMuteOff = 0;		// Erőltetett mute_off szakadt üzenet esetére
 
 
 //**********************************************************
@@ -591,22 +591,22 @@ unsigned char value2;
 
 
 //**********************************************************
-// Altal�nos celu valtozok
+// Altalános celu valtozok
 //**********************************************************
-unsigned char 	oldhw;				// hardware verzi�j�t tartja nyilv�n, ha 1, akkor �j verzi�
+unsigned char 	oldhw;				// hardware verzióját tartja nyilván, ha 1, akkor �j verzió
 
-// unsigned char 	flags;				// jelz�bitek t�r�lve
+// unsigned char 	flags;				// jelzőbitek törölve
 // unsigned char 	flags2;
 // unsigned char 	buttons;
-unsigned char 	minutes;				// id�sz�ml�l�k t�rl�se
+unsigned char 	minutes;				// időszámlálók törlése
 unsigned char 	c2;	
 unsigned char 	s1;	
 unsigned char 	s2;	
-// unsigned char 	hw_msg[16];			// hw �ltal k�ld�tt �zenetek
+// unsigned char 	hw_msg[16];			// hw által kóldött üzenetek
 unsigned char 	s3;	
-unsigned char 	Char_To_Send;		// k�ldend� karakter
-// unsigned char 	Setup_Tomb[26];		//  PC setup �rt�keit tartalmazo t�mb
-unsigned char		Dec_str[10];			// sz�ml�l� �ll�s karakterei ASCII k�dban
+unsigned char 	Char_To_Send;		// küldendő karakter
+// unsigned char 	Setup_Tomb[26];		//  PC setup értékeit tartalmazo tömb
+unsigned char		Dec_str[10];			// számláló állás karakterei ASCII kódban
 unsigned char		AddrL;			// Booking rutinokhoz
 
 //**********************************************************
@@ -628,104 +628,71 @@ unsigned char 	AddrH;
 unsigned char 	RecType;	 		// rekord tipus
 unsigned char 	HexDataH;	 
 unsigned char 	HexDataL;	 
-// unsigned char 	local_CLC;	// ellen�rz� �sszeg
+// unsigned char 	local_CLC;	// ellenőrző összeg
 
 //******************************************
-// automatikusan a 0x04 cimre ker�l
-// Interrupt kiszolg�l� rutin
+// automatikusan a 0x04 cimre kerül
+// Interrupt kiszolgáló rutin
 //*****************************************
 
 void interrupt isr(void)  
 {
 
 /* isr code goes here */
-di();		// tov�bbi megszakit�sok tilt�sa
+di();		// további megszakitások tiltása
 
-	if (RCIF)	// sorosan �rkez� karakter okozta az interruptot
+	if (RCIF)	// sorosan érkező karakter okozta az interruptot
 		{
-		TMR0=0;		//timeout t�rl�s
-		T0IE= 1;			//TIMER0 megszakitas enged�lyez�s 
-		T0IF= 0;			//esetlegesTIMER0 megszakitas t�rl�s	
+		TMR0=0;		//timeout törlés
+		T0IE= 1;			//TIMER0 megszakitas engedélyezés 
+		T0IF= 0;			//esetlegesTIMER0 megszakitas törlés	
 		RX_Char = RCREG;
 		if ((!SFbits.In_Msg) && (RX_Char == STX))
 			{
-			SFbits.In_Msg = 1;		// STX-et kaptunk, kezdodik az �zenet
+			SFbits.In_Msg = 1;		// STX-et kaptunk, kezdodik az üzenet
 			}
 		if (SFbits.In_Msg)
 			{
 			rxfifo[rxiptr] = RX_Char;
 			rxiptr++;
-			rxiptr &= SER_FIFO_MASK;			// esetleges k�rbefordul�s kezel�se
+			rxiptr &= SER_FIFO_MASK;			// esetleges körbefordulás kezelése
 //			ser2_tmp = (rxiptr+1) & SER_FIFO_MASK;
 //			if (ser2_tmp != rxoptr)
 //			rxiptr=ser2_tmp;
 			if  (RX_Char == ETX)
 				{
-				SFbits.In_Msg = 0;		// ETX j�tt, k�sz az �zenet
-				RX_Msg ++;			// �zenetek sz�ma n�vekedjen
+				SFbits.In_Msg = 0;		// ETX jött, kész az üzenet
+				RX_Msg ++;			// üzenetek száma növekedjen
 				T0IE= 0;			//TIMER0 megszakitas tiltas ////////////////////////////////////////
 		//	RX_Msg = 1;		// 
 				}
 			}
 
-		RCIF = 0;			// int flag t�rl�se, karakter lekezelve
+		RCIF = 0;			// int flag törlése, karakter lekezelve
 	
 		} // if rcif
 
 
-// karakter k�ld�s kezel�se
-//	if (TXIF && TXIE)		// ha �res a k�ld� regiszter, bet�ltj�k a k�ldend�t
-//		 {						
-//		TXREG = txfifo[txoptr];			//
-//		++txoptr;						// pointer n�vel�s
-//		txoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�s
-//		if (txoptr==txiptr)
-//			 {				
-//			TXIE = 0;			// ha kiment minden karakter, tiltjuk a tov�bbi k�ld�st
-//			} // ix txoptr									
-//		} // if txif
-
-
-// timer1 megszak�t�s		65 ms ez a max alap
-//		if (TMR1IF)
-//		{
-//		BOR=1;
-//		T0IF=0;		/////////////////////////?????porog sz�mlalo !!!??
-//		if(!BOR&&POR&&PD&&TO)
-//		{
-//		while(1)
-//{
-//		BOR=1;
-//		BOR=0;
-//		BOR=1;
-//		atxst = 1;
-//}		
-//		}
-//		TMR1IF=0;
-//		atxst = 0;
-//		}
-
-
-//timer0 megszak�t�s		65,536 ms ez a max alap
+//timer0 megszakítás		65,536 ms ez a max alap
 		if (T0IF)
 		{
 	
 		T0IE= 0;
-		RX_Char = ETX;					// lez�rjuk az �zenetet 
+		RX_Char = ETX;					// lezárjuk az üzenetet 
 		rxfifo[rxiptr] = RX_Char;
 		rxiptr++;	
-		rxiptr &= SER_FIFO_MASK;			// esetleges k�rbefordul�s kezel�se
+		rxiptr &= SER_FIFO_MASK;			// esetleges körbefordulás kezelése
 		SFbits.In_Msg = 0;		
-		RX_Msg ++;			// �zenetek sz�ma n�vekedjen
-		ForcedMuteOff = 1;	// jelezzuk az esem�nykezel�nek, hogy mute off legyen
+		RX_Msg ++;			// üzenetek száma növekedjen
+		ForcedMuteOff = 1;	// jelezzuk az eseménykezelőnek, hogy mute off legyen
 
 		T0IF=0;
-		T0IE= 0;			//TIMER0 megszakitas enged�lyez�s 
+		T0IE= 0;			//TIMER0 megszakitas engedélyezés 
 		}
 
 
 
-// timer2 megszak�t�s		262.144 ms ez a max alap????????
+// timer2 megszakítás		262.144 ms ez a max alap????????
 //		if (TMR2IF)
 //		{
 //		TMR2IF=0;
@@ -765,16 +732,10 @@ if	(oldhw)
 }
 
 /* ****************************************************
-*   Detonator 2010 r�gi �s uj hardware
-*
-*
-*  hardware specifikus rutinok gy�jtem�nye
+*   Detonator 2010 régi és uj hardware
+**
+*  hardware specifikus rutinok gyűjteménye
 ******************************************************/
-// psect text,class=CODE
-//	psect portinit
-
-
-
 
 
 int Init_New_Ports(void)			//uj hw
@@ -783,8 +744,8 @@ int Init_New_Ports(void)			//uj hw
 	PORTC = 0;
 	PORTA = 0;
 	ADCON0 = 0;		// AD converter letiltva
-	ADCON1 = 6;		// minden porta l�b digit�lis
-	CL1 = 1;		// H szintben legyenek indul�skor
+	ADCON1 = 6;		// minden porta láb digitális
+	CL1 = 1;		// H szintben legyenek induláskor
 	CL2 = 1;
 
 
@@ -807,11 +768,11 @@ int Init_New_Ports(void)			//uj hw
 	OPTION = 0b00000000;
 
 /*
-El�sz�r a PORTC-t bemenetre �ll�tjuk, �s a RC5 olvas�s�val eld�ntj�k, hogy r�gi, vagy �j a HW.
-Ha RC5 = 0, akkor �j verzi�s a hardware (AQ-403, 404), 
-ha RC5 = 1, akkor r�gi verzi� (DET-02)
+Először a PORTC-t bemenetre állítjuk, és a RC5 olvasásával eldöntjük, hogy régi, vagy új a HW.
+Ha RC5 = 0, akkor új verziós a hardware (AQ-403, 404), 
+ha RC5 = 1, akkor régi verzió (DET-02)
 
-UJ HW PORTC kioszt�s:
+UJ HW PORTC kiosztás:
 	PORTC, 7 : RX - bemenet
 	PORTC, 6 : TX - kimenet
 	PORTC, 5 : OK12V - bemenet
@@ -824,7 +785,7 @@ UJ HW PORTC kioszt�s:
 */
 
 
-#ifdef DEBUG  // DEBUG eset�n RC0-t haszn�ljuk
+#ifdef DEBUG  // DEBUG esetén RC0-t használjuk
 
 	TRISC = 0b10110000;
 
@@ -854,16 +815,16 @@ UJ HW PORTC kioszt�s:
 	PORTB, 7 : Debugger
 	PORTB, 6 : Debugger
 	PORTB, 5 : PCTAP - kimenet
-	PORTB, 4 : REM_MUT - bemenet t�vvez�rl�r�l
-	PORTB, 3 :  REM_UP - bemenet t�vvez�rl�r�l
-	PORTB, 2 :  REM_DN - bemenet t�vvez�rl�r�l
+	PORTB, 4 : REM_MUT - bemenet távvezérlőről
+	PORTB, 3 :  REM_UP - bemenet távvezérlőről
+	PORTB, 2 :  REM_DN - bemenet távvezérlőről
 	PORTB, 1 :  A1 - kimenet
 	PORTB, 0 : ON - bemenet
 
 */
 
 
-#ifdef DEBUG  // DEBUG eset�n RB7, RB6 foglalt
+#ifdef DEBUG  // DEBUG esetén RB7, RB6 foglalt
 
 	TRISB = 0b00011101;
 
@@ -880,16 +841,15 @@ UJ HW PORTC kioszt�s:
 int Init_Old_Ports(void)		// regi hw
 {	
 	PORTB = 0b00000000;
-	PORTC = 0b00100000;		// a buzzer legyen H, hogy ne szoljon, a t�bbi 0
+	PORTC = 0b00100000;		// a buzzer legyen H, hogy ne szoljon, a többi 0
 	PORTA = 0;
 	ADCON0 = 0;		// AD converter letiltva
-	ADCON1 = 6;		// minden porta l�b digit�lis
-	OCL1 = 1;			// H szintben legyenek indul�skor
+	ADCON1 = 6;		// minden porta láb digitális
+	OCL1 = 1;			// H szintben legyenek induláskor
 
 
-#ifdef DEBUG  // DEBUG eset�n RB5 foglalt
+#ifdef DEBUG  // DEBUG esetén RB5 foglalt
 
-//	ORST = 0;	//	ez majd kell/*/*/*//*////*//*/*//*/*/*//*///*/*/////*//*//
 
 #else 
 
@@ -897,7 +857,7 @@ int Init_Old_Ports(void)		// regi hw
 	Delayms(1);		// 	Reset a kimeneti IC-nek
 	ORST = 1;		//	Reset impulzust adunk ki
 	Delayms(1);
-	ORST = 0;		//	RB5 az RST jel, legyen �lland� L szinten
+	ORST = 0;		//	RB5 az RST jel, legyen állandó L szinten
 
 #endif
 
@@ -922,11 +882,11 @@ int Init_Old_Ports(void)		// regi hw
 	OPTION = 0b00000000;
 
 /*
-El�sz�r a PORTC-t bemenetre �ll�tjuk, �s a RC5 olvas�s�val eld�ntj�k, hogy r�gi, vagy �j a HW.
-Ha RC5 = 0, akkor �j verzi�s a hardware (AQ-403, 404), 
-ha RC5 = 1, akkor r�gi verzi� (DET-02)
+Először a PORTC-t bemenetre állítjuk, és a RC5 olvasásával eldöntjük, hogy régi, vagy új a HW.
+Ha RC5 = 0, akkor új verziós a hardware (AQ-403, 404), 
+ha RC5 = 1, akkor régi verzió (DET-02)
 
-regi HW PORTC kioszt�s:
+regi HW PORTC kiosztás:
 	PORTC, 7 : RX - bemenet
 	PORTC, 6 : TX - kimenet
 	PORTC, 5 : BUZZER -kimenet
@@ -967,14 +927,14 @@ regi HW PORTC kioszt�s:
 */
 
 
-#ifdef DEBUG  // DEBUG eset�n RB7, RB6 foglalt
+#ifdef DEBUG  // DEBUG esetén RB7, RB6 foglalt
 
 	TRISB = 0b00100000;
 
 #else 
 
 	TRISB = 0b11000000;
-	ORST = 0;		//	RB5 az RST jel, legyen �lland� L szinten/*/*/*/*/*//
+	ORST = 0;		//	RB5 az RST jel, legyen állandó L szinten/*/*/*/*/*//
 
 #endif
 
@@ -985,7 +945,7 @@ void timer_init(void)
 {//Timer 1 init
 
 	T1CON = 0b00110001;	//TIMER1_ON_16BIT_ T0CKI _ ELO OSZTO 8_FOSC/4
-	TMR1IE=0;			//TIMER1 megszakitas enged�lyez�s - most nem
+	TMR1IE=0;			//TIMER1 megszakitas engedélyezés - most nem
 
 
 		  /*bit 7-6 Unimplemented: Read as '0'
@@ -1016,20 +976,17 @@ void timer_init(void)
 	PS0=1;	//Prescaler 256
 	PS1=1;
 	PS2=1;
-	T0IE= 0;			//TIMER0 megszakitas enged�lyez�s - most nem
+	T0IE= 0;			//TIMER0 megszakitas engedélyezés - most nem
 // Timer 2 init
 	T2CON=0b01111111;
 	PR2=0;
-	TMR2IE= 0;		//TIMER2 megszakitas enged�lyez�s - most nem
+	TMR2IE= 0;		//TIMER2 megszakitas engedélyezés - most nem
 /*
 bit 7 Unimplemented: Read as '0'
 bit 6-3 TOUTPS3:TOUTPS0: Timer2 Output Postscale Select bits
 0000 = 1:1 Postscale
 0001 = 1:2 Postscale
 0010 = 1:3 Postscale
-�
-�
-�
 1111 = 1:16 Postscale
 bit 2 TMR2ON: Timer2 On bit
 1 = Timer2 is on
@@ -1045,14 +1002,14 @@ bit 1-0 T2CKPS1:T2CKPS0: Timer2 Clock Prescale Select bits
 *************************************************************/
 
 #define	FOSC	4000000		// 4 MHz kvarc
-// sz�m�t�s k�plete SPBRG = 1 eset�n: Baud_Rate = FOSC/(16(X+1));
+// számítás képlete SPBRG = 1 esetén: Baud_Rate = FOSC/(16(X+1));
 // #define Baud_Rate  9600
 
 // const unsigned char SPBRG_Value = (FOSC/(16 * Baud_Rate)) - 1;
 
 const unsigned int Baud_Rate = 19200;    //
 
-const unsigned long SPBRG_High = 250000;    // Ha BRG=1 (Hi-Speed) lesz 4 MHZ �rajel
+const unsigned long SPBRG_High = 250000;    // Ha BRG=1 (Hi-Speed) lesz 4 MHZ órajel
 const unsigned long SPBRG_Low = 625000;    // Ha BRG=0 (Lo-Speed) lesz
 
 // const unsigned char SPBRG_Value = (4000000/16/Baud_Rate) - 1;
@@ -1063,8 +1020,8 @@ void		init_usart(void)
 
 //; bd_19200	equ	d'13'
 #define	bd_9600		26
-#define	bd_4800		52		//   BRGH=1 eset�n
-#define	bd_2400		25		//	BRGH=0 eset�n
+#define	bd_4800		52		//   BRGH=1 esetén
+#define	bd_2400		25		//	BRGH=0 esetén
 //; bd_1200		equ	d'207'
 
 // SPBRG Baud rate generator register
@@ -1075,7 +1032,7 @@ void		init_usart(void)
 //		SPBRG = bd_2400
 //		SPBRG = bd_4800
 
-		TXIE = 0;		// k�s�bb enged�lyezz�k, m�g nem k�rjen it-t
+		TXIE = 0;		// később engedélyezzük, még ne kérjen it-t
 
 // TXSTA transmit registers setup
 //		; TXSTA register
@@ -1103,13 +1060,13 @@ void		init_usart(void)
 //		; bit1 - 0 - Overrun error
 //		; bit0 - x - 9th bit
 
-		RCSTA = 	0b10010000;		// regiszter kezd��rt�k
+		RCSTA = 	0b10010000;		// regiszter kezdőérték
 	
 		RCIE = 1;
-		PEIE = 1;		// usart k�rhet megszakitast
+		PEIE = 1;		// usart kérhet megszakitast
 
 txiptr = txoptr = rxiptr = rxoptr = 0;
-// txiptr = txoptr = 0;	// pointerek kezd��rt�ke
+// txiptr = txoptr = 0;	// pointerek kezdőértéke
 
 } // init_usart
 
@@ -1141,7 +1098,7 @@ void	erme_lam_on(void)
 
 if	(oldhw)
 	{
-	// r�gi hw-ben nincs �rmeajt� l�mpa kezel�s
+	// régi hw-ben nincs érmeajtó lámpa kezelés
 	} else
 	{
 		A2=1;
@@ -1157,7 +1114,7 @@ if	(oldhw)
 {
 if 	(oldhw)
 	{
-	// r�gi hw-ben nincs �rmeajt� l�mpa kezel�s
+	// régi hw-ben nincs érmeajtó lámpa kezelés
 	} else
 	{
 		A2=1;
@@ -1206,7 +1163,7 @@ void	err_led_on(void)
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en nincs error led
+	// régi hardware-en nincs error led
 	} else
 	{
 		A2 = 1;
@@ -1223,7 +1180,7 @@ void err_led_off(void)
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en nincs error led
+	// régi hardware-en nincs error led
 	} else
 	{
 		A2=1;
@@ -1238,7 +1195,7 @@ if	(oldhw)
 void sleep_led_on	(void)
 {
 if	(oldhw)
-	{			// a r�gi hw-n a piros led
+	{			// a régi hw-n a piros led
 		OA2=1;
 		OA1=0;
 		OA0=1;
@@ -1260,7 +1217,7 @@ if	(oldhw)
 void sleep_led_off(void)
 {
 if	(oldhw)
-	{			// a r�gi hw-n a piros led
+	{			// a régi hw-n a piros led
 		OA2=1;
 		OA1=0;
 		OA0=1;
@@ -1283,7 +1240,7 @@ if	(oldhw)
 void run_led_on(void)
 {
 if	(oldhw)
-	{			// a r�gi hw-n a sarga led
+	{			// a régi hw-n a sarga led
 		OA2=1;
 		OA1=1;
 		OA0=0;
@@ -1306,7 +1263,7 @@ if	(oldhw)
 void run_led_off(void)
 {
 if	(oldhw)
-	{			// a r�gi hw-n a sarga led
+	{			// a régi hw-n a sarga led
 		OA2=1;
 		OA1=1;
 		OA0=0;
@@ -1329,7 +1286,7 @@ void	kibe_lam_on(void)
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en nincs ki-be l�mpa
+	// régi hardware-en nincs ki-be lámpa
 	} else
 		{
 		A2=0;
@@ -1345,7 +1302,7 @@ void kibe_lam_off(void)
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en nincs ki-be l�mpa
+	// régi hardware-en nincs ki-be lámpa
 	} else
 		{
 		A2=0;
@@ -1362,7 +1319,7 @@ void	counter_on(void)
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en nincs counter
+	// régi hardware-en nincs counter
 	} else
 		{
 		A2=0;
@@ -1557,7 +1514,7 @@ void ron_be(void )
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en nincs kimen� t�vvez�rl�s
+	// régi hardware-en nincs kimenő távvezérlés
 	} else
 		{
 		A2=1;
@@ -1573,7 +1530,7 @@ void ron_ki(void )
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en kimen� t�vvez�rl�s
+	// régi hardware-en kimenő távvezérlés
 	} else
 		{
 		A2=1;
@@ -1589,7 +1546,7 @@ void roff_be(void )
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en nincs kimen� t�vvez�rl�s
+	// régi hardware-en nincs kimenő távvezérlés
 	} else
 		{
 		A2=1;
@@ -1605,7 +1562,7 @@ void roff_ki(void )
 {
 if	(oldhw)
 	{
-	// r�gi hardware-en nincs kimen� t�vvez�rl�s
+	// régi hardware-en nincs kimenő távvezérlés
 	} else
 		{
 		A2=1;
@@ -1617,18 +1574,7 @@ if	(oldhw)
 		}
 }
 
-/*
-void pctap_be(void )
-{	
-if	(oldhw)
-	{
-	RC4 = 1;
-	} else
-	{
-	pctap = 1;
-	}
-}
-*/
+
 
 void pctap_ki(void )
 {	
@@ -1644,14 +1590,14 @@ if	(oldhw)
 
 unsigned char	PC12V(void )
 {	
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if	(oldhw)
 	{
-	c2 = 1;			// a r�gi HW-n�l nincs ilyen
+	c2 = 1;			// a régi HW-nél nincs ilyen
 	} else
 	{
-	c2 =	RC5;		// uj hw-n�l rc5=1, ha beindult a 12V t�pegys�g
+	c2 =	RC5;		// uj hw-nél rc5=1, ha beindult a 12V tápegység
 	}
 	return c2;
 }
@@ -1681,7 +1627,7 @@ if	(oldhw)
 
 
 
-// csak a r�gi vez�rl�n�l van ilyen
+// csak a régi vezérlőnél van ilyen
 // BLAM6
 void PageLeftLam_be(void)
 {
@@ -1864,7 +1810,7 @@ while(++del2 < dms)
 	{
 	del1 = 0;
 while(++del1 < 49)
-		{  // �res ciklus
+		{  // üres ciklus
 		}
 	}
 //ei();
@@ -1872,124 +1818,52 @@ while(++del1 < 49)
 
 
 
-/* void delay1s (void)
-{
-int	del1, del2;
-
-del1 = 0;
-del2=0;
-while(++del2<100);
-while(++del1 < 20000);
-// TXREG = 'S';
-//	TXIF=0;
-}
-
-*/
-
-
 //******************************************************
-// Hardver inicializ�l� rutin
+// Hardver inicializáló rutin
 //******************************************************
 
 void	Init_HW(void)
 {	
-		pctap_ki();	//			; sz�m�t�g�p kikapcs.
+		pctap_ki();	//			; számítógép kikapcs.
 		montap_ki();		//			; monitor kikapcs.
-		amptap_ki();		//			; er�s�t� kikapcs.
-		atxst_ki();			//			; sz�m�t�g�p ind�t�s kikapcs.
+		amptap_ki();		//			; erősítő kikapcs.
+		atxst_ki();			//			; számítógép indítás kikapcs.
 
-		buzz_off();		//			; z�mmer kikapcs
-		ermtilt_be();		//		; �rmevizsg�l� tilt�sa
-		mute_be();		//			; er�s�t� n�m�t�s bekapcs.
-		counter_off();		//		; sz�ml�l� kikapcs
+		buzz_off();		//			; zümmer kikapcs
+		ermtilt_be();		//		; érmevizsgáló tiltása
+		mute_be();		//			; erősítő némítás bekapcs.
+		counter_off();		//		; számláló kikapcs
 
-		StepLeftLam_ki();		// r�gi vez�rl� nyomogomb lampak kikapcs
+		StepLeftLam_ki();		// régi vezérlő nyomogomb lampak kikapcs
 		StepRightLam_ki();
 		PageLeftLam_ki();
 		PageRightLam_ki();
 		EnterLam_ki();
 		ReturnLam_ki();
 
-/*   tesztel�sre volt benne
-		StepLeftLam_be();
-		delay1s();
-		StepLeftLam_ki();
-		StepRightLam_be();
-		StepRightLam_ki();
-		PageLeftLam_be();
-		PageLeftLam_ki();
-		PageRightLam_be();
-		PageRightLam_ki();
-		EnterLam_be();
-		EnterLam_ki();
-		ReturnLam_be();
-		ReturnLam_ki();
-
-
-*/	
-
-/*		pctap_be();			//			; sz�m�t�g�p kikapcs.
-		delay1s();
-		atxst_be();			//			; sz�m�t�g�p ind�t�s kikapcs.
-		delay1s();
-		atxst_ki();			//			; sz�m�t�g�p ind�t�s kikapcs.
-
-		montap_be();		//			; monitor kikapcs.
-		montap_ki();		//			; monitor kikapcs.
-		amptap_be();		//			; er�s�t� kikapcs.
-		amptap_ki();		//			; er�s�t� kikapcs.
-		atxst_be();			//			; sz�m�t�g�p ind�t�s kikapcs.
-		atxst_ki();			//			; sz�m�t�g�p ind�t�s kikapcs.
-
-		buzz_on();		//			; z�mmer kikapcs
-		buzz_off();		//			; z�mmer kikapcs
-		ermtilt_be();		//		; �rmevizsg�l� tilt�sa
-		ermtilt_ki();		//		; �rmevizsg�l� tilt�sa
-		mute_be();		//			; er�s�t� n�m�t�s bekapcs.
-		mute_ki();		//			; er�s�t� n�m�t�s bekapcs.
-		counter_on();		//		; sz�ml�l� kikapcs
-		counter_off();		//		; sz�ml�l� kikapcs
-*/
-
-//		pctap_ki();			//			; sz�m�t�g�p kikapcs.
-
-
-//		run_led_on();
-//		run_led_off();
-
-
-//		err_led_on();		//		; error LED ne �gjen
-//		err_led_off();		//		; error LED ne �gjen
-
-
-		sleep_led_on();	//		; sleep LED bekapcs - jelzi a SW fut�s�t
-//		sleep_led_off();	//		; csak teszt, kivenni
-
-
-//		sleep_led_off();	//		; csak teszt, kivenni
-		err_led_off();		//		; error LED ne �gjen
+		sleep_led_on();	//		; sleep LED bekapcs - jelzi a SW futását
+		err_led_off();		//		; error LED ne égjen
 		run_led_off();		//		; start LED kikapcs
-		kibe_lam_off();		//		; ki-be l�mpa kikapcs
-		erme_lam_off();	//		; �rme l�mpa kikapcs
+		kibe_lam_off();		//		; ki-be lámpa kikapcs
+		erme_lam_off();	//		; érme lámpa kikapcs
 
-		vent_lassu();		//		; ventill�tor lassan forogjon
-		ron_ki();			//			; t�vad� kikapcs
-		roff_ki();			//			; t�vad� kikapcs
-
+		vent_lassu();		//		; ventillátor lassan forogjon
+		ron_ki();			//			; távadó kikapcs
+		roff_ki();			//			; távadó kikapcs
 
 } // init_hw
 
 
 
 /*******************************************************************************************
-*  Bemenetek olvas�sa
+*  Bemenetek olvasása
 *
 ********************************************************************************************/
 
 unsigned char KIBE_Pressed (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw == 1)
 	{
@@ -1999,13 +1873,13 @@ if (oldhw == 1)
 	if (OIN1) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 		if (b_kibe == 1)
 		  {
 	 	c2 = 0;
-	 	}	// null�zzuk, ha megsincs megnyomva
+	 	}	// nullázzuk, ha még sincs megnyomva
 	}
 	
 	return  c2;
@@ -2016,7 +1890,7 @@ if (oldhw == 1)
 unsigned char ERMEAJTO_Nyitva (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw == 1)
 	{
@@ -2026,7 +1900,7 @@ if (oldhw == 1)
 	if (OIN2) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 	A2 = 0;	
@@ -2035,7 +1909,7 @@ if (oldhw == 1)
 	if (b_vol) 
 		  {
 	 	c2 = 0;
-	 	}	// null�zzuk, ha megsincs megnyomva
+	 	}	// nullázzuk, ha még sincs megnyomva
 	}
 	
 	return  c2;
@@ -2045,23 +1919,23 @@ if (oldhw == 1)
 unsigned char SETUP_Pressed (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw == 1)
 	{
 
-#ifdef DEBUG  // DEBUG eset�n RC0-t haszn�ljuk
+#ifdef DEBUG  // DEBUG esetén RC0-t használjuk
 
 	if (RB5)   // ez majd RB6 lesz
 
 #else 
 
-	if (RB6)   // nem debug m�dban RB6 lesz
+	if (RB6)   // nem debug módban RB6 lesz
 
 #endif
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 	A2 = 0;	
@@ -2070,7 +1944,7 @@ if (oldhw == 1)
 		if (b_serv)
 		  {
 	 	c2 = 0;
-	 	}	// null�zzuk, ha megsincs megnyomva
+	 	}	// nullázzuk, ha még sincs megnyomva
 	}
 	
 	return  c2;
@@ -2081,7 +1955,7 @@ if (oldhw == 1)
 unsigned char TOUCH_Kezeles (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy touchscreen
+	c2 = 1;		// vegyük úgy, hogy touchscreen
 
 if (oldhw)
 	{
@@ -2091,7 +1965,7 @@ if (oldhw)
 	if (OIN1) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha nem touch
+	 		}	// nullázzuk, ha nem touch
 	} else
 	{
 
@@ -2101,7 +1975,7 @@ if (oldhw)
 	if (b_dip) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha nem touch
+	 		}	// nullázzuk, ha nem touch
 
 	}
 	
@@ -2109,15 +1983,15 @@ if (oldhw)
 }
 
 
-// DIP8 - =1, ha a monitort indul�sko be kell kapcsolni
+// DIP8 - =1, ha a monitort induláskor be kell kapcsolni
 unsigned char DIP_Monitor (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy 
+	c2 = 1;		// vegyük úgy, hogy 
 
 if (oldhw)
 	{
-		c2 = 0;		// r�gi g�pn�l nincs ilyen
+		c2 = 0;		// régi gépnél nincs ilyen
 	} else
 	{
 	A2 = 1;	
@@ -2126,22 +2000,22 @@ if (oldhw)
 	if (b_dip) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha OFF �llapotban van a kapcsol�
+	 		}	// nullázzuk, ha OFF állapotban van a kapcsoló
 
 	}
 	
 	return  c2;
 }
 
-// DIP7 - =1, ha hosszabb kikapcsol�si id�t kell hagyni
+// DIP7 - =1, ha hosszabb kikapcsolási időt kell hagyni
 unsigned char DIP_Longoff (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy 
+	c2 = 1;		// vegyük úgy, hogy 
 
 if (oldhw)
 	{
-		c2 = 0;		// r�gi g�pn�l nincs ilyen
+		c2 = 0;		// régi gépnél nincs ilyen
 	} else
 	{
 	A2 = 1;	
@@ -2150,7 +2024,7 @@ if (oldhw)
 	if (b_dip) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha OFF �llapotban van a kapcsol�
+	 		}	// nullázzuk, ha OFF állapotban van a kapcsoló
 
 	}
 	return  c2;
@@ -2158,15 +2032,15 @@ if (oldhw)
 
 
 
-// DIP3  =1, ha enged�lyezz�k billentyuzet haszn�lat�t
+// DIP3  =1, ha engedélyezzük billentyuzet használatát
 unsigned char DIP_Keyboard (void)
 {
 
-	c2 = 'K';		// vegyuk ugy, hogy enged�lyezett 
+	c2 = 'K';		// vegyük úgy, hogy engedélyezett 
 
 if (oldhw)
 	{
-		c2 = 'N';		// r�gi g�pn�l nincs ilyen
+		c2 = 'N';		// régi gépnél nincs ilyen
 	} else
 	{
 	A2 = 0;	
@@ -2175,24 +2049,24 @@ if (oldhw)
 	if (b_dip) 
 			{ 
 			c2 = 'N';
-	 		}	// null�zzuk, ha OFF �llapotban van a kapcsol�
+	 		}	// nullázzuk, ha OFF állapotban van a kapcsoló
 
 	}
 	
 	return  c2;
 }
 
-// DIP4  =1, ha k�tcsatorn�s t�vvez�rl� van
+// DIP4  =1, ha kétcsatornás távvezérlő van
 unsigned char DIP_2ch_Remote (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy 
+	c2 = 1;		// vegyük úgy, hogy 
 
 if (oldhw)
-	{				// r�gi g�pn�l nincs DIP-kapcsol�
-		c2 = RA2;		// r�gi g�pn�l 2ch-s t�vvez�rl�n�l az RA2 bemenet lebeg, 
-					// ezzel lehet megismerni, hogy csak k�tcsatonr�s
-					// Ha az RA2 H szint, akkor csak k�tcsatorn�s
+	{				// régi gépnél nincs DIP-kapcsoló
+		c2 = RA2;		// régi gépnél 2ch-s távvezérlőnél az RA2 bemenet lebeg, 
+					// ezzel lehet megismerni, hogy csak kétcsatornás
+					// Ha az RA2 H szint, akkor csak kétcsatornás
 	} else
 	{
 	A2 = 0;	
@@ -2201,19 +2075,19 @@ if (oldhw)
 	if (b_dip) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha OFF �llapotban van a kapcsol�
+	 		}	// nullázzuk, ha OFF állapotban van a kapcsoló
 
 	}
 	
 	return  c2;
 }
 
-// DIP2  =1, ha mechanikus �rmevizsg�l� van a g�pben
-// r�gi g�pen jumper
+// DIP2  =1, ha mechanikus érmevizsgáló van a gépben
+// régi gépen jumper
 unsigned char MECH_Ermevizsgalo (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2223,7 +2097,7 @@ if (oldhw)
 	if (OIN2) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha nincs jumper
+	 		}	// nullázzuk, ha nincs jumper
 	} else
 	{
 
@@ -2233,7 +2107,7 @@ if (oldhw)
 	if (b_dip) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, nincs ON �ll�sban
+	 		}	// nullázzuk, nincs ON állásban
 
 	}
 	
@@ -2245,7 +2119,7 @@ if (oldhw)
 unsigned char PageLeft_Pressed (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2255,7 +2129,7 @@ if (oldhw)
 	if (OIN2) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2265,7 +2139,7 @@ if (oldhw)
 	if (!b_but) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2274,7 +2148,7 @@ if (oldhw)
 unsigned char StepLeft_Pressed (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2284,7 +2158,7 @@ if (oldhw)
 	if (OIN2) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2294,7 +2168,7 @@ if (oldhw)
 	if (!b_but) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2303,7 +2177,7 @@ if (oldhw)
 unsigned char Return_Pressed (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2313,7 +2187,7 @@ if (oldhw)
 	if (OIN2) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2323,7 +2197,7 @@ if (oldhw)
 	if (!b_but) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2332,7 +2206,7 @@ if (oldhw)
 unsigned char Enter_Pressed (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2342,7 +2216,7 @@ if (oldhw)
 	if (OIN2) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2352,7 +2226,7 @@ if (oldhw)
 	if (!b_but) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2361,7 +2235,7 @@ if (oldhw)
 unsigned char StepRight_Pressed (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2371,7 +2245,7 @@ if (oldhw)
 	if (OIN2) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2381,7 +2255,7 @@ if (oldhw)
 	if (!b_but) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2390,7 +2264,7 @@ if (oldhw)
 unsigned char PageRight_Pressed (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2400,7 +2274,7 @@ if (oldhw)
 	if (OIN2) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2410,7 +2284,7 @@ if (oldhw)
 	if (!b_but) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2419,7 +2293,7 @@ if (oldhw)
 unsigned char CH1_Coin (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2429,7 +2303,7 @@ if (oldhw)
 	if (OIN1) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2439,7 +2313,7 @@ if (oldhw)
 	if (b_erm) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2448,7 +2322,7 @@ if (oldhw)
 unsigned char CH2_Coin (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2458,7 +2332,7 @@ if (oldhw)
 	if (OIN1) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2468,7 +2342,7 @@ if (oldhw)
 	if (b_erm) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2476,7 +2350,7 @@ if (oldhw)
 unsigned char CH3_Coin (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2486,7 +2360,7 @@ if (oldhw)
 	if (OIN1) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2496,7 +2370,7 @@ if (oldhw)
 	if (b_erm) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2504,7 +2378,7 @@ if (oldhw)
 unsigned char CH4_Coin (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2514,7 +2388,7 @@ if (oldhw)
 	if (OIN1) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2524,7 +2398,7 @@ if (oldhw)
 	if (b_erm) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2532,17 +2406,17 @@ if (oldhw)
 unsigned char CH5_Coin (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
 	OA2 = 0;	
 	OA1 = 0;	
-	OA0 = 1; ////////////////////////////modos�tva 2010 07 08
+	OA0 = 1; 
 	if (OIN1) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2552,7 +2426,7 @@ if (oldhw)
 	if (b_erm) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
@@ -2560,7 +2434,7 @@ if (oldhw)
 unsigned char CH6_Coin (void)
 {
 
-	c2 = 1;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 1;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)
 	{
@@ -2570,7 +2444,7 @@ if (oldhw)
 	if (OIN1) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	} else
 	{
 
@@ -2580,25 +2454,25 @@ if (oldhw)
 	if (b_erm) 
 			{ 
 			c2 = 0;
-	 		}	// null�zzuk, ha megsincs megnyomva
+	 		}	// nullázzuk, ha még sincs megnyomva
 	}
 	return  c2;
 }
 
 /*********************************************************************************
-* T�vvez�rl� bemenetek
+* Távvezérlő bemenetek
 *
 *******************************************************************************/
 
 unsigned char Remote_Mute (void)
 {
-	c2 = 0;		// vegyuk ugy, hogy nincs megnyomva, t�vvez�rl� H szinttel ad
+	c2 = 0;		// vegyük úgy, hogy nincs megnyomva, távvezérlő H szinttel ad
 
 if(SFbits.Remote_2ch)
 	{
-	return c2;		// 2 ch t�vvez�rl�ben nincs mute
+	return c2;		// 2 ch távvezérlőben nincs mute
 	} else
-	{  // 4ch t�vvez�rl�
+	{  // 4ch távvezérlő
 	 if (oldhw)	{if (RA5)   {c2 = 1;} } else	{if (RB4)	{ c2 = 1;	}}  // TV0
 	return  c2;
 	} 
@@ -2608,7 +2482,7 @@ if(SFbits.Remote_2ch)
 unsigned char Remote_TV0 (void)
 {
 
-	c2 = 0;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 0;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)	{if (RA2)   {c2 = 1;} } else	{if (RB4)	{ c2 = 1;	}}  // TV0
 	return  c2;
@@ -2618,16 +2492,16 @@ if (oldhw)	{if (RA2)   {c2 = 1;} } else	{if (RB4)	{ c2 = 1;	}}  // TV0
 
 unsigned char Remote_Volup (void)
 {
-	c2 = 0;		// vegyuk ugy, hogy nincs megnyomva, t�vvez�rl� H szinttel ad
+	c2 = 0;		// vegyük úgy, hogy nincs megnyomva, távvezérlő H szinttel ad
 
 if(SFbits.Remote_2ch)
 	{
 	if (oldhw)	{if (RA5)   {c2 = 1;} } else	{if (RB4)	{ c2 = 1;	}}  // 
-	return c2;		// 2 ch t�vvez�rl�ben a TV0 jel
+	return c2;		// 2 ch távvezérlőben a TV0 jel
 	} else
-	{  // 4ch t�vvez�rl�
+	{  // 4ch távvezérlő
 
-#ifdef DEBUG  // DEBUG eset�n RB7, RB6 foglalt
+#ifdef DEBUG  // DEBUG esetén RB7, RB6 foglalt
 	if (oldhw)	{if (RA4)   // ez majd RB7 lesz , ha nem debug
 #else 
 	if (oldhw)	{if (RB7)   // nem debug 
@@ -2643,7 +2517,7 @@ if(SFbits.Remote_2ch)
 unsigned char Remote_TV1 (void)
 {
 
-	c2 = 0;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 0;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)	{if (RA5)   {c2 = 1;} } else	{if (RB3)   { c2 = 1;}}		// TV1
 	return  c2;
@@ -2652,21 +2526,21 @@ if (oldhw)	{if (RA5)   {c2 = 1;} } else	{if (RB3)   { c2 = 1;}}		// TV1
 
 unsigned char Remote_Voldn (void)
 {
-	c2 = 0;		// vegyuk ugy, hogy nincs megnyomva, t�vvez�rl� H szinttel ad
+	c2 = 0;		// vegyük úgy, hogy nincs megnyomva, távvezérlő H szinttel ad
 
 if(SFbits.Remote_2ch)
 	{
 
-#ifdef DEBUG  // DEBUG eset�n RB7, RB6 foglalt
+#ifdef DEBUG  // DEBUG esetén RB7, RB6 foglalt
 	if (oldhw)	{if (RA4)   // ez majd RB7 lesz , ha nem debug
 #else 
 	if (oldhw)	{if (RB7)   // nem debug 
 #endif
 
    {c2 = 1;} } else	{if (RB3)   { c2 = 1;}}		// TV1
-	return c2;		// 2 ch t�vvez�rl�ben a TV1 jel
+	return c2;		// 2 ch távvezérlőben a TV1 jel
 	} else
-	{  // 4ch t�vvez�rl�
+	{  // 4ch távvezérlő
 		if (oldhw)	
 			{
 			if (RA2) 	{ c2 = 1;	}
@@ -2684,7 +2558,7 @@ if(SFbits.Remote_2ch)
 unsigned char Remote_TV2 (void)
 {
 
-	c2 = 0;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 0;		// vegyük úgy, hogy meg van nyomva
 
 if (oldhw)	{if (RA4)   // ez majd RB7 lesz 
 	{ c2 = 1;	} } else {if (RB2) { c2 = 1;	}}			//TV2
@@ -2692,16 +2566,16 @@ if (oldhw)	{if (RA4)   // ez majd RB7 lesz
 }
 */
 
-unsigned char Remote_Vol4b (void)		// 4. t�vvez�rl� gomb
+unsigned char Remote_Vol4b (void)		// 4. távvezérlő gomb
 {
-	c2 = 0;		// vegyuk ugy, hogy nincs megnyomva, t�vvez�rl� H szinttel ad
+	c2 = 0;		// vegyük úgy, hogy nincs megnyomva, távvezérlő H szinttel ad
 
 if(SFbits.Remote_2ch)
 	{
-	return c2;		// 2 ch t�vvez�rl�ben nincs 4. gomb
+	return c2;		// 2 ch távvezérlőben nincs 4. gomb
 	} else
-	{  // 4ch t�vvez�rl�
-if (oldhw) {c2 = 0;		// r�gi hw-en nincs, sose lesz megnyomva	
+	{  // 4ch távvezérlő
+if (oldhw) {c2 = 0;		// régi hw-en nincs, sose lesz megnyomva	
 	} else {A2 = 1;	A1 = 1;	A0 = 1; 	if (b_erm) { c2 = 1;}	}  // TV3
 	return  c2;
 	} 
@@ -2711,11 +2585,11 @@ if (oldhw) {c2 = 0;		// r�gi hw-en nincs, sose lesz megnyomva
 unsigned char Remote_TV3 (void)
 {
 
-	c2 = 0;		// vegyuk ugy, hogy meg van nyomva
+	c2 = 0;		// vegyük úgy, hogy meg van nyomva
 
-if (oldhw) {c2 = 0;		// r�gi hw-en nincs, sose lesz megnyomva	
+if (oldhw) {c2 = 0;		// régi hw-en nincs, sose lesz megnyomva	
 	} else {A2 = 1;	A1 = 1;	A0 = 1; 	if (b_erm) { c2 = 1;}	}
-	// a t�vvez�rl� magas szintet ad megnyom�skor
+	// a távvezérlő magas szintet ad megnyomáskor
 	return  c2;
 }
 */
@@ -2733,11 +2607,11 @@ if (oldhw) {c2 = 0;		// r�gi hw-en nincs, sose lesz megnyomva
 //		}		
 	// continue;
 	
-//	GIE=0;		// tiltunk minden megszakit�st
-//	txfifo[txiptr] = c;		// karaktert bem�soljuk a k�ld� pufferbe
-//	txiptr=(txiptr+1) & SER_FIFO_MASK;	// pointer n�vel�s, k�rbefordul�s kezel�s
-//	TXIE=1;		// enged�lyezz�k az ad�st
-//	GIE=1;		// enged�lyezz�k a megszak�t�sokat
+//	GIE=0;		// tiltunk minden megszakitást
+//	txfifo[txiptr] = c;		// karaktert bemásoljuk a küldő pufferbe
+//	txiptr=(txiptr+1) & SER_FIFO_MASK;	// pointer növelés, körbefordulás kezelés
+//	TXIE=1;		// engedélyezzük az adást
+//	GIE=1;		// engedélyezzük a megszakításokat
 // }
 
 void	putch(unsigned char byte) 
@@ -2747,16 +2621,16 @@ void	putch(unsigned char byte)
 	while(!TXIF)	/* set when register is empty */
 		continue;
 	TXREG = byte;
-//	txfifo[txiptr] = byte;				// bet�ltj�k a kimen� regiszterbe
+//	txfifo[txiptr] = byte;				// betöltjük a kimenő regiszterbe
 //	txiptr++;
-//	txiptr &= SER_FIFO_MASK;		// kezelj�k a k�rbefordul�st
+//	txiptr &= SER_FIFO_MASK;		// kezeljük a körbefordulást
 
-//	TXIE=1;						// enged�lyezz�k az ad�st
+//	TXIE=1;						// engedélyezzük az adást
 	ei();	// teszt
 }
 
 /*************************************************************
-   Hangjelz�st ad� rutinok
+   Hangjelzést adó rutinok
 **************************************************************/
 
 void		beep(BP_TYPE beep_type)
@@ -2809,7 +2683,7 @@ unsigned char	reg1;
 } // beep rutin
 	
 
-// h�rom gyor ATX impulzus egym�s ut�n - a r�gebbi g�pek nem indultak el egy impulzust�l
+// három gyor ATX impulzus egymás után - a régebbi gépek nem indultak el egy impulzustól
 void		atxst_pulse (void)
 	{
 			atxst_be();
@@ -2840,21 +2714,21 @@ void		send_mess (unsigned char str)
 
 
 /*************************************************
-	RX �zenetsz�ml�l� cs�kkent�se
+	RX üzenetszámláló csökkentése
 *************************************************/
 void		Dec_RX_Msg(void)
 {
-	di();					// megszakit�s tiltva
-	if(RX_Msg)				// ha nem nulla, cs�kkentj�k
+	di();					// megszakitás tiltva
+	if(RX_Msg)				// ha nem nulla, csökkentjük
 		{
 		RX_Msg--;
 		} 
 
-	if(!RX_Msg && !SFbits.In_Msg)		// ha nulla lett az �zenetek sz�ma, �s pont nincs bej�v� �zenet, nulla legyen
-		{							// EEPROM ir�sos rutin alatt (pl. 100 ms) j�het be valami, azt ne nyelj�k be
-		rxoptr = rxiptr;			// a k�t pointer egyezzen meg, nincs feldolgozatlan �zenet
+	if(!RX_Msg && !SFbits.In_Msg)		// ha nulla lett az üzenetek száma, és pont nincs bejövő üzenet, nulla legyen
+		{							// EEPROM írásos rutin alatt (pl. 100 ms) jöhet be valami, azt ne nyeljük be
+		rxoptr = rxiptr;			// a két pointer egyezzen meg, nincs feldolgozatlan üzenet
 		}
-	ei();					// megszakit�s emnged�lyezve
+	ei();					// megszakitás emngedélyezve
 }
 
 	
@@ -2876,7 +2750,7 @@ unsigned char	local_CLC;
 	putch(m_startup);
 	local_CLC++;
 
-/* EEPROM-b�l ment a service k�d
+/* EEPROM-ból ment a service kód
 		for(s1=8; s1<16; s1++)
 		{
 		Char_To_Send = EEPROM_READ(s1);
@@ -2942,12 +2816,12 @@ unsigned char	local_CLC;
 		putch(Char_To_Send);
 		local_CLC++;
 
-// #ifdef DEBUG  // DEBUG eset�n RB7, RB6 foglalt
+// #ifdef DEBUG  // DEBUG esetén RB7, RB6 foglalt
 
-		BadButBits.t2ch = SFbits.Remote_2ch;		// k�ldj�k azt is, hogy 2 csatorn�s a �vvez�rl�
+		BadButBits.t2ch = SFbits.Remote_2ch;		// küldjük azt is, hogy 2 csatornás a ávvezérlő
 
 // #endif 
-		Char_To_Send =  BadButBits.x;			//	elk�ldj�k a beragadt gombok azonositoit
+		Char_To_Send =  BadButBits.x;			//	elküldjük a beragadt gombok azonositoit
 		putch(Char_To_Send);
 		local_CLC++;
 
@@ -2959,7 +2833,7 @@ unsigned char	local_CLC;
 
 
 /*********************************************************************
-* Sz�m form�tum �talak�t�sa ASCII k�dol�s� stringre
+* Szám formátum átalakítása ASCII kódolású stringre
 *********************************************************************/
 int Num2Dec (DWORD BeNum)	
 {
@@ -2967,31 +2841,31 @@ int Num2Dec (DWORD BeNum)
 DWORD	maradek;
 unsigned char tpo;
 
-	di();						// megszakit�s tilt�sa
-	s1 = 0;					// a kimeno stringet kinull�zzuk
+	di();						// megszakitás tiltása
+	s1 = 0;					// a kimeno stringet kinullázzuk
 	while ( ++s1 < 10) 
 		{
-		Dec_str[s1] = 0;		// nem ASCII nulla! Nem �rt�kes sz�mjegyek
+		Dec_str[s1] = 0;		// nem ASCII nulla! Nem értékes számjegyek
 		}
-	Dec_str[0] = '0';			// Ha nulla lenne a sz�m
+	Dec_str[0] = '0';			// Ha nulla lenne a szám
 
 	s1 = 0;
 	while (BeNum > 0)
 		{
-		maradek = BeNum % 10;		// (%) operator - marad�kos oszt�s marad�ka
+		maradek = BeNum % 10;		// (%) operator - maradékos osztás maradéka
 		Dec_str[s1] = ctmp[maradek];
-		BeNum = BeNum / 10;		// oszt�s t�rtek elhagy�s�val
+		BeNum = BeNum / 10;		// osztás törtek elhagyásával
 		s1++;
 		}
-	ei();				// megszakit�s enged�lyez�se
+	ei();				// megszakitás engedélyezése
 }
 
 
 /*****************************************************************
-* D�tum be- �s kikodol�sa (t�m�rit�se, kicsomagolasa)
-* Bej�v� adat: 6 db ASCII karakter: EE-HH-NN a Date_Str t�mbben
-* kimen� adat: 1 Integer
-* k�plet: EV * 550 + HO * 40 + NAP
+* dátum be- és kikodolása (tömöritése, kicsomagolasa)
+* bejövő adat: 6 db ASCII karakter: EE-HH-NN a Date_Str tömbben
+* kimenő adat: 1 Integer
+* képlet: EV * 550 + HO * 40 + NAP
 *****************************************************************/
 /*
 unsigned int 	Date_Encode(void)
@@ -3032,26 +2906,26 @@ unsigned char Ev, Ho, Nap;
 }
 
 
-// EEPROM �r�s ellen�rizve
-// az �r�snak �s a visszaolvas�snak meg kell egyeznie
-// Visszat�r� �rt�k az olvas�sok sz�ma
+// EEPROM írás ellenőrizve
+// az írásnak és a visszaolvasásnak meg kell egyeznie
+// Visszatérő érték az olvasások száma
 unsigned char		CHK_eeprom_write(unsigned char addr, unsigned char value)
 {
 unsigned char Chk, RDVal;
 
 
-		Wrts = 0;							// visszat�r�si hibajelzo param�ter
+		Wrts = 0;							// visszatérési hibajelzo paraméter
 
 //		bor();    //////BOR figyeles
-		if(eeprom_irhato)					// Wrts = 0, ha nincs hiba, Wrts = 1..5, ha t�bb ir�si kiserlet volt, Wrts = 10, ha kobor irasi kiserlet volt
+		if(eeprom_irhato)					// Wrts = 0, ha nincs hiba, Wrts = 1..5, ha több írási kiserlet volt, Wrts = 10, ha kobor irasi kiserlet volt
 			{
 			do
 				{
-				RDVal = value;			// k�s�bbi ellen�rz�shez
-				eeprom_write(addr, value);	// Kiirat�s, megv�rjuk a v�g�t (gy�ri f�ggv�ny)
-				Chk = eeprom_read(addr);	// Ellen�rz� visszaolvas�s
-				if (Chk == value) break;		// Ha j� a visszaolvas�s, kiugrunk a ciklusb�l;
-				Wrts++;					// Wrts sz�molja, h�nyszor pr�b�ltunk irni
+				RDVal = value;			// későbbi ellenőrzőshez
+				eeprom_write(addr, value);	// Kiiratás, megvárjuk a végét (gyári függvény)
+				Chk = eeprom_read(addr);	// ellenőrző visszaolvasás
+				if (Chk == value) break;		// Ha jó a visszaolvasás, kiugrunk a ciklusból;
+				Wrts++;					// Wrts számolja, hányszor próbáltunk irni
 				}
 			while  (Wrts <5);
 			}
@@ -3061,80 +2935,45 @@ unsigned char Chk, RDVal;
 				}
 			EEADR = 0xff;
 			EEDATA = 0xff;
-		return	Wrts;				// Ha wrts = 5, hib�s az �r�s
+		return	Wrts;				// Ha wrts = 5, hibás az írás
 		
 }
 
-// EEPROM olvas�s ellen�rizve
-// k�t egym�st k�vet� olvas�snak meg kell egyeznie
+// EEPROM olvasás ellenőrizve
+// két egymást követő olvasásnak meg kell egyeznie
 unsigned char		CHK_eeprom_read(unsigned char addr)
 {
 unsigned char Val1, Val2;
 
 		do
 			{
-			Val1 = eeprom_read(addr);	// Beolvas�s
-			Val2 = eeprom_read(addr);	// Ellen�rz� beolvas�s
+			Val1 = eeprom_read(addr);	// Beolvasás
+			Val2 = eeprom_read(addr);	// ellenőrző beolvasás
 			}
-		while  (Val1 != Val2);			// ism�tli, amig nem kap egyforma adatot
-		return	Val1;				//  visszet�r�si �rt�k az olvasott byte
+		while  (Val1 != Val2);			// ismétli, amig nem kap egyforma adatot
+		return	Val1;				//  visszetérési érték az olvasott byte
 		
 }
 
 
 /************************************************************************
-* k�nyvel�si adatok  �r�sa az EEPROM-ba
-* Bej�v� adatok:	adat sorsz�ma: bnum
-* 				d�tum a DateStr v�ltoz�ban EEHHNN form�ban
-*				sz�ml�l� �ll�sok a Booking_Counter v�ltoz�ban
+* könyvelési adatok  írása az EEPROM-ba
+* bejövő adatok:	adat sorszáma: bnum
+* 				dátum a DateStr változóban EEHHNN formában
+*				számláló állások a Booking_Counter változóban
 *************************************************************************/
 
 
-/*
-void 	EEPROM_Booking_Read(unsigned char bnum)
-{
-unsigned char RH, Chk;
-
-			bnum = (bnum * 8) + booking_addr;	// A k�nyvel�s ter�let kezdet�re ugrunk
-
-			Date_Store.DLSB = CHK_eeprom_read(bnum);
-			bnum++;
-			Date_Store.DMSB = CHK_eeprom_read(bnum); 
-			bnum++;
-			RH = CHK_eeprom_read(bnum);    // byte-onk�nt beolvassuk a z�r�si adatot
-			bnum++;
-			Booking_Counter.H2 = CHK_eeprom_read(bnum);    // byte-onk�nt beolvassuk a z�r�si adatot
-			bnum++;
-			Booking_Counter.H1 = CHK_eeprom_read(bnum);    // byte-onk�nt beolvassuk a z�r�si adatot
-			bnum++;
-			Booking_Counter.H0 = CHK_eeprom_read(bnum);    // byte-onk�nt beolvassuk a z�r�si adatot
-			bnum++;
-			Booking_Counter.R1 = CHK_eeprom_read(bnum);    // byte-onk�nt beolvassuk a z�r�si adatot
-			bnum++;
-			Booking_Counter.R0 = CHK_eeprom_read(bnum);    // byte-onk�nt beolvassuk a z�r�si adatot
-
-			Date_Decode(Date_Store.Zipped);					// kapott d�tum bet�m�r�t�se
-			Booking_Counter.H3 = RH;					// 
-			Booking_Counter.H3 &= 0x0F;				// Hosszu sz�ml�l� els� 4 bitje 
-
-			Booking_Counter.R2 = RH;						// a r�vid sz�ml�l� els� 4 bitje lesz
-			Booking_Counter.R2 &= 0xF0;					// az RH fels� tetr�dja 
-			Booking_Counter.R2 >>= 4;
-	
-}
-
-*/
-
 /************************************************************************
-* Sz�ml�l� �ll�sok k�ld�se ASCII form�tumban
+* számláló állások küldése ASCII formátumban
 ************************************************************************/
 
 /*void		Chip_First_Run(void)
 {
-// el�sz�r fut a chip
+// először fut a chip
 
-	// lek�rdezz�k a PC-t�l a setup-ot �s asz�ml�l�kat
-	eeprom_write(0, 0x55);		// EEPROM-ba �rjuk, hogy inicializ�ltuk a chipet
+	// lekérdezzük a PC-től a setup-ot és aszámlálókat
+	eeprom_write(0, 0x55);		// EEPROM-ba írjuk, hogy inicializáltuk a chipet
 	s1 = eeprom_read(0);
 
 }
@@ -3146,7 +2985,7 @@ void	DownloadCode(void);		//	Uses USART to receive data from PC
 
 
 /*****************************************************************
-* �rmeSETUP adatok beolvas�sa az EEPROM-b�l
+* érmeSETUP adatok beolvasása az EEPROM-ból
 * 
 ******************************************************************/
 void	EEPROM_CH_Read(void)
@@ -3156,14 +2995,14 @@ unsigned char local_addr, Val;
 	for(s1= 0; s1< 6; s1++)
 		{
 		local_addr = s1 + setup_addr;
-		Val = CHK_eeprom_read(local_addr);			// az �rmecsatorna csak egy sorsz�mot tartalmaz
-		Val -= '0';									// ASCII-b�l legyen sz�m
+		Val = CHK_eeprom_read(local_addr);			// az érmecsatorna csak egy sorszámot tartalmaz
+		Val -= '0';									// ASCII-ból legyen szám
 		CH_Money[s1+1] = Money_Val[Val];
 		}
 }
 
 /*****************************************************************
-* Counters adatok beolvas�sa az EEPROM-b�l
+* Counters adatok beolvasása az EEPROM-ból
 * 
 ******************************************************************/
 void	EEPROM_Counters_Read(void)
@@ -3173,18 +3012,18 @@ unsigned char local1_addr, local2_addr, local3_addr;
 	for(s1= 0; s1< 8; s1++)
 		{
 		local1_addr = s1 + counter1_addr;
-		Counter.cnumbyte[s1] = EEPROM_READ(local1_addr);   // a nagybet�s EEPROM_READ makr�, nem f�ggv�ny
+		Counter.cnumbyte[s1] = EEPROM_READ(local1_addr);   // a nagybetűs EEPROM_READ makró, nem függvény
 		local2_addr = s1 + counter2_addr;
 		Counter2.cnumbyte[s1] = EEPROM_READ(local2_addr);
 		local3_addr = s1 + counter3_addr;
 		Counter3.cnumbyte[s1] = EEPROM_READ(local3_addr);
 //		Setup_Tomb[s1] = EEPROM_READ((s1+setup_addr));
 		}
-	if ((Counter.Hosszu != Counter2.Hosszu) || (Counter.Rovid != Counter2.Rovid) 		// ez a felt�tel akkor igaz, ha a counter sem a counter2-vel,
+	if ((Counter.Hosszu != Counter2.Hosszu) || (Counter.Rovid != Counter2.Rovid) 		// ez a feltétel akkor igaz, ha a counter sem a counter2-vel,
 		&& (Counter.Hosszu != Counter3.Hosszu) || (Counter.Rovid != Counter3.Rovid))	// sem a counter 3-mal nem egyezik meg: mert ha valamelyikkel
-																		// megegyezik, akkor a counterben j� �rt�k van. (2 egyenl� a h�romb�l)
+																		// megegyezik, akkor a counterben jó érték van. (2 egyenlő a háromból)
 		{
-		if ((Counter2.Hosszu == Counter3.Hosszu) && (Counter2.Rovid == Counter3.Rovid))	// ha a counter 2 �s 3 teljesen megegyezik, ez a j� �rt�k
+		if ((Counter2.Hosszu == Counter3.Hosszu) && (Counter2.Rovid == Counter3.Rovid))	// ha a counter 2 és 3 teljesen megegyezik, ez a jó érték
 			{
 			Counter.Hosszu = Counter2.Hosszu;
 			Counter.Rovid = Counter2.Rovid;
@@ -3194,115 +3033,115 @@ unsigned char local1_addr, local2_addr, local3_addr;
 }
 
 /*****************************************************************
-* Counters adatok �r�sa az EEPROM-ba.
-* Minden �rme bedob�s ut�n �runk
+* Counters adatok írása az EEPROM-ba.
+* Minden érme bedobás után írunk
 * 
 ******************************************************************/
 void	EEPROM_Counters_Write(void)
 {
 unsigned char local1_addr, local2_addr, local3_addr;
 
-				eeprom_irhato = 1;				// enged�lyezz�k aqz eeprom ir�st
-				for(s1= 0; s1< 8; s1++)			// sz�ml�l�k aktu�lis �rt�k�nek beolvas�sa
+				eeprom_irhato = 1;				// engedélyezzük aqz eeprom írást
+				for(s1= 0; s1< 8; s1++)			// számlálók aaktuális értékének beolvasása
 					{
 					local1_addr = s1 + counter1_addr;
-					Chk = CHK_eeprom_write(local1_addr, Counter.cnumbyte[s1]);    // EEPROM-ba �rjuk
+					Chk = CHK_eeprom_write(local1_addr, Counter.cnumbyte[s1]);    // EEPROM-ba írjuk
 					local2_addr = s1 + counter2_addr;
-					Chk = CHK_eeprom_write(local2_addr, Counter.cnumbyte[s1]);    // mind a h�rom ter�letre ugyanazt �rjuk
+					Chk = CHK_eeprom_write(local2_addr, Counter.cnumbyte[s1]);    // mind a három területre ugyanazt írjuk
 					local3_addr = s1 + counter3_addr;
 					Chk = CHK_eeprom_write(local3_addr, Counter.cnumbyte[s1]);    // 
 					}
-				eeprom_irhato = 0;				// tiltjuk az eeprom ir�st
+				eeprom_irhato = 0;				// tiltjuk az eeprom írást
 
 }
 
 
 /*****************************************************************
-* soros vonalon �rkezett �zeneteket kezeli
-* akkor ugrik ide a program, ha k�sz �zenet van a pufferben
+* soros vonalon érkezett üzeneteket kezeli
+* akkor ugrik ide a program, ha kész üzenet van a pufferben
 ******************************************************************/
 
-// z�r�si adatrekord a PC fel�l
+// zárási adatrekord a PC felől
 void	Get_Booking(void)
 {
-		//		rxoptr += 2;					// STX �s parancsk�d �tl�p�se
-		//		rxoptr &=	SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-				DateStr[0] = rxfifo[rxoptr];		// a puffer harmadik karakter�t�l j�n 6 karakter d�tum
-				rxoptr ++;						//  pointer n�vel�s
-				rxoptr &=	SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-				DateStr[1] = rxfifo[rxoptr];		// a puffer m�sodik karakter�t�l j�n 6 karakter d�tum
-				rxoptr ++;						//  pointer n�vel�s
-				rxoptr &=	SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-				DateStr[2] = rxfifo[rxoptr];		// a puffer m�sodik karakter�t�l j�n 6 karakter d�tum
-				rxoptr ++;						//  pointer n�vel�s
-				rxoptr &=	SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-				DateStr[3] = rxfifo[rxoptr];		// a puffer m�sodik karakter�t�l j�n 6 karakter d�tum
-				rxoptr ++;						//  pointer n�vel�s
-				rxoptr &=	SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-				DateStr[4] = rxfifo[rxoptr];		// a puffer m�sodik karakter�t�l j�n 6 karakter d�tum
-				rxoptr ++;						//  pointer n�vel�s
-				rxoptr &=	SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-				DateStr[5] = rxfifo[rxoptr];		// a puffer m�sodik karakter�t�l j�n 6 karakter d�tum
-				rxoptr ++;						// pointer n�vel�s
-				rxoptr &=	SER_FIFO_MASK;		// k�rbefordul�s kezel�se
+		//		rxoptr += 2;					// STX és parancskód átlépése
+		//		rxoptr &=	SER_FIFO_MASK;		// körbefordulás kezelése
+				DateStr[0] = rxfifo[rxoptr];		// a puffer harmadik karakterétől jön 6 karakter dátum
+				rxoptr ++;						//  pointer növelés
+				rxoptr &=	SER_FIFO_MASK;		// körbefordulás kezelése
+				DateStr[1] = rxfifo[rxoptr];		// a puffer második karakterétől jön 6 karakter dátum
+				rxoptr ++;						//  pointer növelés
+				rxoptr &=	SER_FIFO_MASK;		// körbefordulás kezelése
+				DateStr[2] = rxfifo[rxoptr];		// a puffer második karakterétől jön 6 karakter dátum
+				rxoptr ++;						//  pointer növelés
+				rxoptr &=	SER_FIFO_MASK;		// körbefordulás kezelése
+				DateStr[3] = rxfifo[rxoptr];		// a puffer második karakterétől jön 6 karakter dátum
+				rxoptr ++;						//  pointer növelés
+				rxoptr &=	SER_FIFO_MASK;		// körbefordulás kezelése
+				DateStr[4] = rxfifo[rxoptr];		// a puffer második karakterétől jön 6 karakter dátum
+				rxoptr ++;						//  pointer növelés
+				rxoptr &=	SER_FIFO_MASK;		// körbefordulás kezelése
+				DateStr[5] = rxfifo[rxoptr];		// a puffer második karakterétől jön 6 karakter dátum
+				rxoptr ++;						// pointer növelés
+				rxoptr &=	SER_FIFO_MASK;		// körbefordulás kezelése
 
 				Date_Store.Zipped =  550 * ( (DateStr[0] - '0') * 10 + (DateStr[1] - '0'));
 				Date_Store.Zipped = Date_Store.Zipped + 40 * ( (DateStr[2] - '0') * 10 + (DateStr[3] - '0'));
 				Date_Store.Zipped = Date_Store.Zipped + (DateStr[4] - '0') * 10 + (DateStr[5] - '0');
-				// kapott d�tum bet�m�r�t�se
+				// kapott dátum betömörítése
 
 		
-				for(s1= 0; s1< 8; s1++)			// sz�ml�l�k aktu�lis �rt�k�nek beolvas�sa
+				for(s1= 0; s1< 8; s1++)			// számlálók aaktuális értékének beolvasása
 					{
 					AddrL = s1 + counter1_addr;
 					Counter.cnumbyte[s1] = CHK_eeprom_read(AddrL);
 					}
 
-				AddrL = CHK_eeprom_read(BKPointer);    // beolvassuk a k�vetkez� z�r�si cimet
-	//			bnum = (bnum * 8) + booking_addr;	// A k�nyvel�s ter�let kezdet�re ugrunk
-				RH = Counter.R2;				// a r�vid sz�ml�l� MSB bitjeit kezelj�k
-				RH &= 0x0F;						// az als� tetr�d marad 
+				AddrL = CHK_eeprom_read(BKPointer);    // beolvassuk a következő zárási cimet
+	//			bnum = (bnum * 8) + booking_addr;	// A könyvelés terület kezdetére ugrunk
+				RH = Counter.R2;				// a rövid számláló MSB bitjeit kezeljük
+				RH &= 0x0F;						// az alsó tetrád marad 
 				RH <<= 4;
-				Counter.H3 &= 0x0F;				// itt is csak az als� 4 bit kell
+				Counter.H3 &= 0x0F;				// itt is csak az alsó 4 bit kell
 				RH |= Counter.H3;				// 
 
 				eeprom_irhato = 1;
-				Chk = CHK_eeprom_write(AddrL,Date_Store.DLSB);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Chk = CHK_eeprom_write(AddrL,Date_Store.DLSB);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Chk = CHK_eeprom_write(AddrL, Date_Store.DMSB);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Chk = CHK_eeprom_write(AddrL, Date_Store.DMSB);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Chk = CHK_eeprom_write(AddrL, RH);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Chk = CHK_eeprom_write(AddrL, RH);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Chk = CHK_eeprom_write(AddrL, Counter.H2);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Chk = CHK_eeprom_write(AddrL, Counter.H2);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Chk = CHK_eeprom_write(AddrL, Counter.H1);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Chk = CHK_eeprom_write(AddrL, Counter.H1);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Chk = CHK_eeprom_write(AddrL, Counter.H0);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Chk = CHK_eeprom_write(AddrL, Counter.H0);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Chk = CHK_eeprom_write(AddrL, Counter.R1);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Chk = CHK_eeprom_write(AddrL, Counter.R1);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Chk = CHK_eeprom_write(AddrL, Counter.R0);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Chk = CHK_eeprom_write(AddrL, Counter.R0);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				if (AddrL == 240) { AddrL = 48; }				// kezelj�k a pointer k�rbefordul�s�t
-				Chk = CHK_eeprom_write(BKPointer, AddrL);    // EEPROM-ba a k�vetkez� z�r�si pointer
+				if (AddrL == 240) { AddrL = 48; }				// kezeljük a pointer körbefordulását
+				Chk = CHK_eeprom_write(BKPointer, AddrL);    // EEPROM-ba a következő zárási pointer
 
-				Counter.Rovid = 0;					// null�z�s
+				Counter.Rovid = 0;					// nullázás
 				
-				for(s1= 0; s1< 8; s1++)			// sz�ml�l�k aktu�lis �rt�k�nek beolvas�sa
+				for(s1= 0; s1< 8; s1++)			// számlálók aaktuális értékének beolvasása
 					{
 					AddrL = s1 + counter1_addr;
-					Chk = CHK_eeprom_write(AddrL, Counter.cnumbyte[s1]);    // EEPROM-ba �rjuk
+					Chk = CHK_eeprom_write(AddrL, Counter.cnumbyte[s1]);    // EEPROM-ba írjuk
 					AddrL = s1 + counter2_addr;													//////////////
-					Chk = CHK_eeprom_write(AddrL, Counter.cnumbyte[s1]);    // EEPROM-ba �rjuk			//////////////
+					Chk = CHK_eeprom_write(AddrL, Counter.cnumbyte[s1]);    // EEPROM-ba írjuk			//////////////
 					AddrL = s1 + counter3_addr;													//////////////
-					Chk = CHK_eeprom_write(AddrL, Counter.cnumbyte[s1]);    // EEPROM-ba �rjuk			//////////////
+					Chk = CHK_eeprom_write(AddrL, Counter.cnumbyte[s1]);    // EEPROM-ba írjuk			//////////////
 					}
 
 				eeprom_irhato = 0;
 
-				rxoptr++;						// ETX �tl�p�se
-				rxoptr &=	SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-				RX_Msg --;					// egy �zenet feldolgozva
+				rxoptr++;						// ETX átlépése
+				rxoptr &=	SER_FIFO_MASK;		// körbefordulás kezelése
+				RX_Msg --;					// egy üzenet feldolgozva
 		
 				putch(STX);		// nyugta
 				putch(ACK);
@@ -3315,13 +3154,13 @@ void	Wait_For_Ack(void)
 {
 	while(!RX_Msg) 
 		{
-		}		// v�r egy bej�v� �zenetet
+		}		// v�r egy bejövő üzenetet
 		di();
 		rxoptr++;		// ha j�tt valami, az STX-et �tl�pj�k
 		rxoptr++;
 		rxoptr++;
 		rxoptr &= SER_FIFO_MASK;
-		Dec_RX_Msg();				// �zenet kezelve
+		Dec_RX_Msg();				// üzenet kezelve
 		ei();
 	
 }
@@ -3330,14 +3169,14 @@ void	Wait_For_Ack(void)
 
 void Send_Booking(void)
 {
-			s2 = CHK_eeprom_read(BKPointer);    // beolvassuk a k�vetkez� z�r�si cimet
+			s2 = CHK_eeprom_read(BKPointer);    // beolvassuk a következő zárási cimet
 			mpl = 0; 							// 24-szer csin�ljuk meg a ciklust
 			do
 				{
-				if (s2 == booking_addr)				// kisz�mitjuk az utols� z�r�s cim�t
+				if (s2 == booking_addr)				// kiszámitjuk az utolsó zárás cim�t
 					{
-					s2 = last_booking_addr;			// a 8-cal kor�bbi cimen van a legfrissebb z�r�s
-					} else						// k�rbefordul�s kezel�s
+					s2 = last_booking_addr;			// a 8-cal kor�bbi cimen van a legfrissebb zárás
+					} else						// körbefordulás kezelés
 					{
 					s2 = s2 - 8;
 					}
@@ -3345,38 +3184,38 @@ void Send_Booking(void)
 			//	putch(12);				// LineFeed
 			//	putch(15);				// Carriage Return
 				AddrL = s2;
-	//		AddrL = (bnum * 8) + booking_addr;	// A k�nyvel�s ter�let kezdet�re ugrunk
+	//		AddrL = (bnum * 8) + booking_addr;	// A könyvelés terület kezdet�re ugrunk
 				Date_Store.DLSB = CHK_eeprom_read(AddrL);
 				AddrL++;
 				Date_Store.DMSB = CHK_eeprom_read(AddrL); 
 				AddrL++;
-				RH = CHK_eeprom_read(AddrL);    // byte-onk�nt beolvassuk a z�r�si adatot
+				RH = CHK_eeprom_read(AddrL);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Booking_Counter.H2 = CHK_eeprom_read(AddrL);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Booking_Counter.H2 = CHK_eeprom_read(AddrL);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Booking_Counter.H1 = CHK_eeprom_read(AddrL);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Booking_Counter.H1 = CHK_eeprom_read(AddrL);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Booking_Counter.H0 = CHK_eeprom_read(AddrL);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Booking_Counter.H0 = CHK_eeprom_read(AddrL);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Booking_Counter.R1 = CHK_eeprom_read(AddrL);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Booking_Counter.R1 = CHK_eeprom_read(AddrL);    // byte-onként beolvassuk a zárási adatot
 				AddrL++;
-				Booking_Counter.R0 = CHK_eeprom_read(AddrL);    // byte-onk�nt beolvassuk a z�r�si adatot
+				Booking_Counter.R0 = CHK_eeprom_read(AddrL);    // byte-onként beolvassuk a zárási adatot
 
-				Date_Decode(Date_Store.Zipped);					// kapott d�tum bet�m�r�t�se
+				Date_Decode(Date_Store.Zipped);					// kapott dátum betömör�t�se
 				Booking_Counter.H3 = RH;					// 
-				Booking_Counter.H3 &= 0x0F;				// Hosszu sz�ml�l� els� 4 bitje 
+				Booking_Counter.H3 &= 0x0F;				// Hosszu számláló első 4 bitje 
 
-				Booking_Counter.R2 = RH;						// a r�vid sz�ml�l� els� 4 bitje lesz
-				Booking_Counter.R2 &= 0xF0;					// az RH fels� tetr�dja 
+				Booking_Counter.R2 = RH;						// a rövid számláló első 4 bitje lesz
+				Booking_Counter.R2 &= 0xF0;					// az RH felső tetr�dja 
 				Booking_Counter.R2 >>= 4;
 
 				putch(STX);				// STX
 				local_CLC = 0;
-				putch(m_booking_send);		// Parancsk�d
+				putch(m_booking_send);		// parancskód
 				local_CLC++;
 
 				Char_To_Send = 'A' + mpl;
-				putch(Char_To_Send);				// Z�r�s sorsz�ma + 'A'
+				putch(Char_To_Send);				// zárás sorszáma + 'A'
 				local_CLC++;
 
 				for(s3=0; s3 < 6; s3++)
@@ -3390,9 +3229,9 @@ void Send_Booking(void)
 				putch(Char_To_Send);
 				local_CLC++;
 
-				Num2Dec(Booking_Counter.Hosszu);	// hosszu sz�ml�l� �talak�t�sa ASCII stringg�
+				Num2Dec(Booking_Counter.Hosszu);	// hosszu számláló �talak�t�sa ASCII stringg�
 				dcmut = 9;
-				while(Dec_str[dcmut] == 0) 	// Felesleges bal oldali null�k �tl�p�se
+				while(Dec_str[dcmut] == 0) 	// Felesleges bal oldali null�k átlépése
 					{
 					dcmut--;
 					}
@@ -3409,9 +3248,9 @@ void Send_Booking(void)
 				putch(Char_To_Send);
 				local_CLC++;
 	
-				Num2Dec(Booking_Counter.Rovid);	// r�vid sz�ml�l� �talak�t�sa ASCII stringg�
+				Num2Dec(Booking_Counter.Rovid);	// rövid számláló �talak�t�sa ASCII stringg�
 				dcmut = 9;
-				while(Dec_str[dcmut] == 0) 	// Felesleges bal oldali null�k �tl�p�se
+				while(Dec_str[dcmut] == 0) 	// Felesleges bal oldali null�k átlépése
 					{
 					dcmut--;
 					}
@@ -3431,16 +3270,16 @@ void Send_Booking(void)
 				local_CLC = ~local_CLC + 1;
 				putch(local_CLC);
 				putch(ETX);
-				Wait_For_Ack();			// megv�rjuk a nyugt�t
-				Delayms(10);				// k�sleltet�s
-				mpl++;					// pozitiv nyugta j�tt, ciklussz�ml�l� n�vel�s
+				Wait_For_Ack();			// megvárjuk a nyugt�t
+				Delayms(10);				// késleltetés
+				mpl++;					// pozitiv nyugta j�tt, ciklusszámláló növelés
 		
 		} while (mpl < 24);	// end of do ciklus
 	} // end of send_booking
 
 
 
-// sz�ml�l� �ll�sok a PC fel�l
+// számláló állások a PC fel�l
 // EEPROM-ba �rni
 void	Get_Counters(void)
 {
@@ -3450,16 +3289,16 @@ unsigned char AddrL2, AddrL3;
 					{
 					 rxoptr++;
 					 rxoptr &= SER_FIFO_MASK;	
-					}		 // megkeress�k az �zenet v�g�t
+					}		 // megkeress�k az üzenet v�g�t
 				rxoptr++;				
 				 rxoptr &= SER_FIFO_MASK;		// az ETX_et is �tl�pj�k
 				s1 = rxoptr;
 				if(s1 == 0) { s1 = SER_FIFO_MASK; } else { s1--;}	// s1-et cs�kkentj�k
 				if(s1 == 0) { s1 = SER_FIFO_MASK; } else { s1--;}	// s1-et cs�kkentj�k
 				if(s1 == 0) { s1 = SER_FIFO_MASK; } else { s1--;}	// s1-et cs�kkentj�k
-				if(s1 == 0) { s1 = SER_FIFO_MASK; } else { s1--;}	// s1-et cs�kkentj�k		// �sszesen 4-el kell cs�kkenteni
+				if(s1 == 0) { s1 = SER_FIFO_MASK; } else { s1--;}	// s1-et cs�kkentj�k		// összesen 4-el kell cs�kkenteni
 	
-//			s1 = rxoptr - 4; 		// visszafel� elemezz�k az �zenetet. A -4 pozicio a rovid sz�ml�l� v�ge
+//			s1 = rxoptr - 4; 		// visszafel� elemezzük az üzenetet. A -4 pozicio a rovid számláló v�ge
 				dcmut = 0;
 				while(rxfifo[s1] != ' ') 	// amig nem space, m�solunk
 					{
@@ -3470,15 +3309,15 @@ unsigned char AddrL2, AddrL3;
 					}
 
 				Counter.Rovid = 0;
-				mpl = 1;						// aktu�lis szorzo �rt�ke
+				mpl = 1;						// aaktuális szorzo értéke
 				for(s2=0; s2<dcmut; s2++)
 					{
 					Counter.Rovid = Counter.Rovid + (mpl * Dec_str[s2]);
-					mpl = 10 * mpl;			// aktu�lis szorzo n�vel�se
+					mpl = 10 * mpl;			// aaktuális szorzo növelése
 					}
 
 					if(s1 == 0) { s1 = SER_FIFO_MASK; } else { s1--;}	// s1-et cs�kkentj�k
-		//		s1--; 		// �tugorjuk az elv�laszt�t, feldolgozzuk a hosszu sz�ml�l�t
+		//		s1--; 		// �tugorjuk az elv�laszt�t, feldolgozzuk a hosszu számlálót
 				dcmut = 0;
 				while(rxfifo[s1] != ' ') 	// amig nem space, m�solunk
 					{
@@ -3489,23 +3328,23 @@ unsigned char AddrL2, AddrL3;
 					}
 
 				Counter.Hosszu = 0;
-				mpl = 1;						// aktu�lis szorzo �rt�ke
+				mpl = 1;						// aaktuális szorzo értéke
 				for(s2=0; s2<dcmut; s2++)
 					{
 					Counter.Hosszu = Counter.Hosszu + (mpl * Dec_str[s2]);
-					mpl = 10 * mpl;			// aktu�lis szorzo n�vel�se
+					mpl = 10 * mpl;			// aaktuális szorzo növelése
 					}
 
 
-	//			AddrL = CHK_eeprom_read(BKPointer);    // beolvassuk a k�vetkez� z�r�si cimet
-	//			bnum = (bnum * 8) + booking_addr;	// A k�nyvel�s ter�let kezdet�re ugrunk
+	//			AddrL = CHK_eeprom_read(BKPointer);    // beolvassuk a következő zárási cimet
+	//			bnum = (bnum * 8) + booking_addr;	// A könyvelés terület kezdet�re ugrunk
 
 
 				eeprom_irhato = 1;
 				for(s1= 0; s1< 8; s1++)
 					{
 					AddrL = s1 + counter1_addr;
-					Chk = CHK_eeprom_write(AddrL, Counter.cnumbyte[s1]);    // byte-onk�nt ki�rjuk a sz�ml�l�kat
+					Chk = CHK_eeprom_write(AddrL, Counter.cnumbyte[s1]);    // byte-onként ki�rjuk a számlálókat
 					AddrL2 = s1 + counter2_addr;
 					Chk = CHK_eeprom_write(AddrL2, Counter.cnumbyte[s1]);    // ugyanazt �rjuk mindenhova
 					AddrL3 = s1 + counter3_addr;
@@ -3513,7 +3352,7 @@ unsigned char AddrL2, AddrL3;
 					}
 				eeprom_irhato = 0;
 
-				Dec_RX_Msg();		// �zenet lekezelve
+				Dec_RX_Msg();		// üzenet lekezelve
 				putch(STX);		// nyugta
 				putch(ACK);
 				putch(ETX);
@@ -3535,11 +3374,11 @@ unsigned char local2_addr, local3_addr;
 				Counter3.cnumbyte[s1] = CHK_eeprom_read(local3_addr);
 				}
 
-	if ((Counter.Hosszu != Counter2.Hosszu) || (Counter.Rovid != Counter2.Rovid) 		// ez a felt�tel akkor igaz, ha a counter sem a counter2-vel,
+	if ((Counter.Hosszu != Counter2.Hosszu) || (Counter.Rovid != Counter2.Rovid) 		// ez a feltétel akkor igaz, ha a counter sem a counter2-vel,
 		&& (Counter.Hosszu != Counter3.Hosszu) || (Counter.Rovid != Counter3.Rovid))	// sem a counter 3-mal nem egyezik meg: mert ha valamelyikkel
-																		// megegyezik, akkor a counterben j� �rt�k van. (2 egyenl� a h�romb�l)
+																		// megegyezik, akkor a counterben j� érték van. (2 egyenlő a háromból)
 		{
-		if ((Counter2.Hosszu == Counter3.Hosszu) && (Counter2.Rovid == Counter3.Rovid))	// ha a counter 2 �s 3 teljesen megegyezik, ez a j� �rt�k
+		if ((Counter2.Hosszu == Counter3.Hosszu) && (Counter2.Rovid == Counter3.Rovid))	// ha a counter 2 és 3 teljesen megegyezik, ez a j� érték
 			{
 			Counter.Hosszu = Counter2.Hosszu;
 			Counter.Rovid = Counter2.Rovid;
@@ -3548,15 +3387,15 @@ unsigned char local2_addr, local3_addr;
 
 			putch(STX);				// STX
 			local_CLC = 0;
-			putch(m_counters_send);	// Parancsk�d
+			putch(m_counters_send);	// parancskód
 			local_CLC++;
 			Char_To_Send = m_space;		// Space karakter elv�laszt�nak
 			putch(Char_To_Send);
 			local_CLC++;
 
-			Num2Dec(Counter.Hosszu);	// hosszu sz�ml�l� �talak�t�sa ASCII stringg�
+			Num2Dec(Counter.Hosszu);	// hosszu számláló �talak�t�sa ASCII stringg�
 			dcmut = 9;
-			while(Dec_str[dcmut] == 0) 	// Felesleges bal oldali null�k �tl�p�se
+			while(Dec_str[dcmut] == 0) 	// Felesleges bal oldali null�k átlépése
 				{
 				dcmut--;
 				}
@@ -3573,9 +3412,9 @@ unsigned char local2_addr, local3_addr;
 			putch(Char_To_Send);
 			local_CLC++;
 	
-			Num2Dec(Counter.Rovid);	// r�vid sz�ml�l� �talak�t�sa ASCII stringg�
+			Num2Dec(Counter.Rovid);	// rövid számláló �talak�t�sa ASCII stringg�
 			dcmut = 9;
-			while(Dec_str[dcmut] == 0) 	// Felesleges bal oldali null�k �tl�p�se
+			while(Dec_str[dcmut] == 0) 	// Felesleges bal oldali null�k átlépése
 				{
 				dcmut--;
 				}
@@ -3594,7 +3433,7 @@ unsigned char local2_addr, local3_addr;
 
 			local_CLC = ~local_CLC + 1;
 //			putch(local_CLC);
-			Wrts = Wrts + '0';			// ASCII k�dot k�ldj�nk
+			Wrts = Wrts + '0';			// ASCII k�dot k�ldjönk
 			putch(Wrts);
 			Wrts = 0;					// legyen ujra nulla
 			putch(ETX);
@@ -3604,8 +3443,8 @@ unsigned char local2_addr, local3_addr;
 
 
 /*****************************************************************************
-* Setup adatok k�ld�se
-* Beolvas�s az EEPROM-b�l
+* Setup adatok küldése
+* Beolvasás az EEPROM-b�l
 ****************************************************************************/
 void	Send_Setup(void)
 {
@@ -3631,21 +3470,21 @@ unsigned char	local_CLC;
 void	Get_Setup(void)
 {
 
-	//	rxoptr++;						// pointer n�vel�s
-	//	rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
+	//	rxoptr++;						// pointer növelés
+	//	rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
 
 	for (s1=0; s1 < setup_size; s1++)
 		{
-		AddrL = s1 + setup_addr;		// setup ter�let cime
+		AddrL = s1 + setup_addr;		// setup terület cime
 //		mpl = s1+2;					// rxfifo offset
 		eeprom_irhato = 1;
 		Chk = CHK_eeprom_write(AddrL, rxfifo[rxoptr]);	// mpl volt itt
 		eeprom_irhato = 0;
-		rxoptr++;						// pointer n�vel�se
-		rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
+		rxoptr++;						// pointer növelése
+		rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
 		}
 		rxoptr++;						// CLC 
-		rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
+		rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
 
 		putch(STX);					// nyugta
 		putch(ACK);
@@ -3657,32 +3496,32 @@ void	Get_Setup(void)
 
 
 /*************************************************
-	kikapcsol�si m�veletek
+	kikapcsolósi m�veletek
 *************************************************/
 void		Proc_Shutdown (void)
 {
 			ermtilt_be();
-			erme_lam_off();							// �rmeajt� l�mpa kikapcs
+			erme_lam_off();							// érmeajtó lámpa kikapcs
 //			send_mess(str_shutdown);
 			mute_be();
 
 
-			AddrL = setup_credits_addr;					// setup kredit ter�let cime
+			AddrL = setup_credits_addr;					// setup kredit terület cime
 			eeprom_irhato = 1;
-			Chk = CHK_eeprom_write(AddrL, rxfifo[rxoptr]);	// kiirjuk a kreditek sz�m�t
-			rxoptr++;									// pointer n�vel�se
-			rxoptr &= SER_FIFO_MASK;					// k�rbefordul�s kezel�se
+			Chk = CHK_eeprom_write(AddrL, rxfifo[rxoptr]);	// kiirjuk a kreditek szám�t
+			rxoptr++;									// pointer növelése
+			rxoptr &= SER_FIFO_MASK;					// körbefordulás kezelése
 
-			AddrL++;									// hanger� �ll�sa (+48)
-			Chk = CHK_eeprom_write(AddrL, rxfifo[rxoptr]);	// kiirjuk a kreditek sz�m�t
+			AddrL++;									// hanger� állása (+48)
+			Chk = CHK_eeprom_write(AddrL, rxfifo[rxoptr]);	// kiirjuk a kreditek szám�t
 			eeprom_irhato = 0;
-			rxoptr++;									// pointer n�vel�se
-			rxoptr &= SER_FIFO_MASK;					// k�rbefordul�s kezel�se
+			rxoptr++;									// pointer növelése
+			rxoptr &= SER_FIFO_MASK;					// körbefordulás kezelése
 
-			rxoptr++;									// ETX �tl�p�se
-			rxoptr &= SER_FIFO_MASK;					// k�rbefordul�s kezel�se
+			rxoptr++;									// ETX átlépése
+			rxoptr &= SER_FIFO_MASK;					// körbefordulás kezelése
 
-			Dec_RX_Msg();							// �zenet kezelve
+			Dec_RX_Msg();							// üzenet kezelve
 
 			Delayms(200);		////*/*/**/*/*/*/**100-500
 			amptap_ki();
@@ -3693,7 +3532,7 @@ void		Proc_Shutdown (void)
 	
 //			if(SFbits.Long_Switchoff)
 //				{ s1 = 30; } else { s1 = 10; }  // original
-		//		{ s1 = 50; } else { s1 = 20; }  // hosszabb kikapcsol�s kell	{ s1 =30- 50; } else { s1 =10- 20; }mmmmmmm
+		//		{ s1 = 50; } else { s1 = 20; }  // hosszabb kikapcsolós kell	{ s1 =30- 50; } else { s1 =10- 20; }mmmmmmm
 
 				s1 = 40;
 			
@@ -3711,10 +3550,10 @@ void		Proc_Shutdown (void)
 				Delayms(500);
 
 				s1--;
-				if (!s2)				// r�gi hw-n�l az s2 sose lesz 0
+				if (!s2)				// régi hw-n�l az s2 sose lesz 0
 					{
 					s1 = 0;
-					SFbits.Normal_Switchoff = 1;		// jelezz�k, hogy mag�t�l �llt le a PC
+					SFbits.Normal_Switchoff = 1;		// jelezzük, hogy mag�t�l �llt le a PC
 					}			// v�ge legyen a while-nak (break)
 				} //while
 			
@@ -3723,7 +3562,7 @@ void		Proc_Shutdown (void)
 			{	
 
 			if (!oldhw)
-				{  // ujhw	eset�n hossz� atx impulzust adunk
+				{  // ujhw	esetén hossz� atx impulzust adunk
 				atxst_be();				// atx t�ske
 				for(s1=0; s1<11; s1++)
 					{
@@ -3742,29 +3581,29 @@ void		Proc_Shutdown (void)
 			pctap_ki();
 			Delayms(500);		//	mmmmmmmmmm
 			atxst_ki();				// atzx t�ske vissza, m�r valszeg le�llt
-			beep(off);				// hangjelz�s
+			beep(off);				// hangjelzés
 
 
 	//		RESET();   ////// mod 2010 07 09
 	//		#asm												
 	//		asm("BCF _PCLATH,4");									
 	//		asm("BCF _PCLATH,3");									
-	//		asm("GOTO 0x0000");		// restart, a HW �jraindul		
+	//		asm("GOTO 0x0000");		// restart, a HW újraindul		
 	//		#endasm
 }
 	
 
 /***********************************************************************************
-* �rme bedob�st vizsg�l� rutin
+* érme bedob�st vizsg�l� rutin
 V�gig k�rdezi a 6 csatorn�t, ha sehol semmi, hamar visszat�r
-Ha valahol van �rme bedob�s, akkor az �rz�kelt jel ut�n 5ms prellmentesit�si idot v�runk,
-ut�na �jra olvassuk a l�bat. Ha m�g mindig megvan, �zenetet k�ld�nk, �s megv�rjuk a felfut� �lt,
+Ha valahol van érme bedob�s, akkor az �rz�kelt jel után 5ms prellmentesit�si idot várunk,
+utána újra olvassuk a l�bat. Ha m�g mindig megvan, üzenetet k�ld�nk, és megvárjuk a felfut� �lt,
 azt is prellmentesitve (5 ms).
 ************************************************************************************/
 void	Scan_Inputs(void)
 {
 unsigned char	sci;
-// �rmevizsg�l� csatorn�k figyel�se
+// érmevizsgáló csatorn�k figyel�se
 
 //		mute_be();				//csak teszt
 
@@ -3779,7 +3618,7 @@ unsigned char	sci;
 			sci = sci+  Enter_Pressed();
 			sci = sci+ Return_Pressed();
 		
-			if(SFbits.Remote_Present)		// csak akkor n�z�nk t�vvez�rl�t, ha van
+			if(SFbits.Remote_Present)		// csak akkor n�z�nk távvezérlőt, ha van
 				{
 				sci = sci+ Remote_Volup();
 				sci = sci+ Remote_Voldn();
@@ -3787,173 +3626,173 @@ unsigned char	sci;
 
 			if (sci > 3 )
 				{
-				eeprom_irhato = 0;				// enged�lyezz�k aqz eeprom ir�st
+				eeprom_irhato = 0;				// engedélyezzük aqz eeprom írást
 				Delayms(500);
 				}
 		
 
 		s1 = CH1_Coin();
-		if (s1 != ERMbits.CH1)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != ERMbits.CH1)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = CH1_Coin();			// �jra r�olvasunk
-			if (s1 != ERMbits.CH1)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = CH1_Coin();			// újra r�olvasunk
+			if (s1 != ERMbits.CH1)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					ERMbits.CH1 = 1;		// biztosan megj�tt az �rme jel
+					ERMbits.CH1 = 1;		// biztosan megj�tt az érme jel
 //					bor();		////BOR figyeles
-					send_mess(m_ch1_Pressed);	// �zenetet k�ld�nk
-					if(!TVbits.PC_Test_Mode)	// Teszt m�dban nem sz�moljuk az �rm�ket
+					send_mess(m_ch1_Pressed);	// üzenetet k�ld�nk
+					if(!TVbits.PC_Test_Mode)	// Teszt módban nem számoljuk az �rm�ket
 						{
 //						bor();		////BOR figyeles
 						Counter.Hosszu += CH_Money[1];
 						Counter.Rovid += CH_Money[1];
-						EEPROM_Counters_Write();	// kiirjuk az uj �rt�ket
+						EEPROM_Counters_Write();	// kiirjuk az uj értéket
 						}
 					} else
 					{
-					ERMbits.CH1 = 0;		// v�get �rt az �rme jel
-					send_mess(m_ch1_Released);	// �zenetet k�ld�nk
+					ERMbits.CH1 = 0;		// v�get �rt az érme jel
+					send_mess(m_ch1_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 
 		s1 = CH2_Coin();
-		if (s1 != ERMbits.CH2)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != ERMbits.CH2)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = CH2_Coin();			// �jra r�olvasunk
-			if (s1 != ERMbits.CH2)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = CH2_Coin();			// újra r�olvasunk
+			if (s1 != ERMbits.CH2)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					ERMbits.CH2 = 1;		// biztosan megj�tt az �rme jel
+					ERMbits.CH2 = 1;		// biztosan megj�tt az érme jel
 //					bor();		////BOR figyeles
-					send_mess(m_ch2_Pressed);	// �zenetet k�ld�nk
-					if(!TVbits.PC_Test_Mode)	// Teszt m�dban nem sz�moljuk az �rm�ket
+					send_mess(m_ch2_Pressed);	// üzenetet k�ld�nk
+					if(!TVbits.PC_Test_Mode)	// Teszt módban nem számoljuk az �rm�ket
 						{
 							bor();		////BOR figyeles
 						Counter.Hosszu += CH_Money[2];
 						Counter.Rovid += CH_Money[2];
-						EEPROM_Counters_Write();	// kiirjuk az uj �rt�ket
+						EEPROM_Counters_Write();	// kiirjuk az uj értéket
 						}
 					} else
 					{
-					ERMbits.CH2 = 0;		// v�get �rt az �rme jel
-					send_mess(m_ch2_Released);	// �zenetet k�ld�nk
+					ERMbits.CH2 = 0;		// v�get �rt az érme jel
+					send_mess(m_ch2_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 
 
 		s1 = CH3_Coin();
-		if (s1 != ERMbits.CH3)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != ERMbits.CH3)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = CH3_Coin();			// �jra r�olvasunk
-			if (s1 != ERMbits.CH3)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = CH3_Coin();			// újra r�olvasunk
+			if (s1 != ERMbits.CH3)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					ERMbits.CH3 = 1;		// biztosan megj�tt az �rme jel
+					ERMbits.CH3 = 1;		// biztosan megj�tt az érme jel
 //					bor();		////BOR figyeles
-					send_mess(m_ch3_Pressed);	// �zenetet k�ld�nk
-					if(!TVbits.PC_Test_Mode)	// Teszt m�dban nem sz�moljuk az �rm�ket
+					send_mess(m_ch3_Pressed);	// üzenetet k�ld�nk
+					if(!TVbits.PC_Test_Mode)	// Teszt módban nem számoljuk az �rm�ket
 						{
 //						bor();		////BOR figyeles
 						Counter.Hosszu += CH_Money[3];
 						Counter.Rovid += CH_Money[3];
-						EEPROM_Counters_Write();	// kiirjuk az uj �rt�ket
+						EEPROM_Counters_Write();	// kiirjuk az uj értéket
 						}
 					} else
 					{
-					ERMbits.CH3 = 0;		// v�get �rt az �rme jel
-					send_mess(m_ch3_Released);	// �zenetet k�ld�nk
+					ERMbits.CH3 = 0;		// v�get �rt az érme jel
+					send_mess(m_ch3_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 
 
 		s1 = CH4_Coin();
-		if (s1 != ERMbits.CH4)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != ERMbits.CH4)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = CH4_Coin();			// �jra r�olvasunk
-			if (s1 != ERMbits.CH4)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = CH4_Coin();			// újra r�olvasunk
+			if (s1 != ERMbits.CH4)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					ERMbits.CH4 = 1;		// biztosan megj�tt az �rme jel
+					ERMbits.CH4 = 1;		// biztosan megj�tt az érme jel
 //					bor();		////BOR figyeles
-					send_mess(m_ch4_Pressed);	// �zenetet k�ld�nk
-					if(!TVbits.PC_Test_Mode)	// Teszt m�dban nem sz�moljuk az �rm�ket
+					send_mess(m_ch4_Pressed);	// üzenetet k�ld�nk
+					if(!TVbits.PC_Test_Mode)	// Teszt módban nem számoljuk az �rm�ket
 						{
 //						bor();		////BOR figyeles
 						Counter.Hosszu += CH_Money[4];
 						Counter.Rovid += CH_Money[4];
-						EEPROM_Counters_Write();	// kiirjuk az uj �rt�ket
+						EEPROM_Counters_Write();	// kiirjuk az uj értéket
 						}
 					} else
 					{
-					ERMbits.CH4 = 0;		// v�get �rt az �rme jel
-					send_mess(m_ch4_Released);	// �zenetet k�ld�nk
+					ERMbits.CH4 = 0;		// v�get �rt az érme jel
+					send_mess(m_ch4_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 
 
 		s1 = CH5_Coin();
-		if (s1 != ERMbits.CH5)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != ERMbits.CH5)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = CH5_Coin();			// �jra r�olvasunk
-			if (s1 != ERMbits.CH5)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = CH5_Coin();			// újra r�olvasunk
+			if (s1 != ERMbits.CH5)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					ERMbits.CH5 = 1;		// biztosan megj�tt az �rme jel
+					ERMbits.CH5 = 1;		// biztosan megj�tt az érme jel
 //					bor();		////BOR figyeles
-					send_mess(m_ch5_Pressed);	// �zenetet k�ld�nk
-					if(!TVbits.PC_Test_Mode)	// Teszt m�dban nem sz�moljuk az �rm�ket
+					send_mess(m_ch5_Pressed);	// üzenetet k�ld�nk
+					if(!TVbits.PC_Test_Mode)	// Teszt módban nem számoljuk az �rm�ket
 						{
 //						bor();		////BOR figyeles
 						Counter.Hosszu += CH_Money[5];
 						Counter.Rovid += CH_Money[5];
-						EEPROM_Counters_Write();	// kiirjuk az uj �rt�ket
+						EEPROM_Counters_Write();	// kiirjuk az uj értéket
 						}
 					} else
 					{
-					ERMbits.CH5 = 0;		// v�get �rt az �rme jel
-					send_mess(m_ch5_Released);	// �zenetet k�ld�nk
+					ERMbits.CH5 = 0;		// v�get �rt az érme jel
+					send_mess(m_ch5_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 
 
 		s1 = CH6_Coin();
-		if (s1 != ERMbits.CH6)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != ERMbits.CH6)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = CH6_Coin();			// �jra r�olvasunk
-			if (s1 != ERMbits.CH6)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = CH6_Coin();			// újra r�olvasunk
+			if (s1 != ERMbits.CH6)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					ERMbits.CH6 = 1;		// biztosan megj�tt az �rme jel
+					ERMbits.CH6 = 1;		// biztosan megj�tt az érme jel
 //					bor();		////BOR figyeles
-					send_mess(m_ch6_Pressed);	// �zenetet k�ld�nk
-					if(!TVbits.PC_Test_Mode)	// Teszt m�dban nem sz�moljuk az �rm�ket
+					send_mess(m_ch6_Pressed);	// üzenetet k�ld�nk
+					if(!TVbits.PC_Test_Mode)	// Teszt módban nem számoljuk az �rm�ket
 						{
 //						bor();		////BOR figyeles
 						Counter.Hosszu += CH_Money[6];
 						Counter.Rovid += CH_Money[6];
-						EEPROM_Counters_Write();	// kiirjuk az uj �rt�ket
+						EEPROM_Counters_Write();	// kiirjuk az uj értéket
 						}
 					} else
 					{
-					ERMbits.CH6 = 0;		// v�get �rt az �rme jel
-					send_mess(m_ch6_Released);	// �zenetet k�ld�nk
+					ERMbits.CH6 = 0;		// v�get �rt az érme jel
+					send_mess(m_ch6_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
@@ -3967,7 +3806,7 @@ sci=0;
 			sci = sci+  Enter_Pressed();
 			sci = sci+ Return_Pressed();
 		
-			if(SFbits.Remote_Present)		// csak akkor n�z�nk t�vvez�rl�t, ha van
+			if(SFbits.Remote_Present)		// csak akkor n�z�nk távvezérlőt, ha van
 				{
 				sci = sci+ Remote_Volup();
 				sci = sci+ Remote_Voldn();
@@ -3975,27 +3814,27 @@ sci=0;
 
 			if (sci > 3 )
 				{
-				eeprom_irhato = 0;				// enged�lyezz�k aqz eeprom ir�st
+				eeprom_irhato = 0;				// engedélyezzük aqz eeprom írást
 				Delayms(500);
 				}
 
 //   bor();		////BOR figyeles
-// �rmeajt� figyel�se
+// érmeajtó figyel�se
 	s1 = ERMEAJTO_Nyitva();
-		if (s1 != ERMbits.Erme_Ajto)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != ERMbits.Erme_Ajto)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);						// 5 ms prellmentesit�s
-			s1 = ERMEAJTO_Nyitva();			// �jra r�olvasunk
-			if (s1 != ERMbits.Erme_Ajto)      		// ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = ERMEAJTO_Nyitva();			// újra r�olvasunk
+			if (s1 != ERMbits.Erme_Ajto)      		// ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)						// lefut� �l j�tt, �rmeajt�t kinyitott�k
+				if(s1 ==1)						// lefut� �l j�tt, érmeajtót kinyitott�k
 					{
-					ERMbits.Erme_Ajto = 1;			// r�gz�tj�k, hogy nyitva az �rmeajt�
-					send_mess(m_Vol_Pressed);		// �zenetet k�ld�nk
+					ERMbits.Erme_Ajto = 1;			// r�gz�tj�k, hogy nyitva az érmeajtó
+					send_mess(m_Vol_Pressed);		// üzenetet k�ld�nk
 					} else
 					{
-					ERMbits.Erme_Ajto = 0;			// bez�rt�k az �rmeajt�t
-					send_mess(m_Vol_Released);	// �zenetet k�ld�nk
+					ERMbits.Erme_Ajto = 0;			// bezérték az érmeajtót
+					send_mess(m_Vol_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
@@ -4003,30 +3842,30 @@ sci=0;
 // bor();		////BOR figyeles
 // kulcsos kapcsolo figyel�se
 		s1 = SETUP_Pressed();
-		if (s1 != ERMbits.Serv_Mode)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != ERMbits.Serv_Mode)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = SETUP_Pressed();			// �jra r�olvasunk
-			if (s1 != ERMbits.Serv_Mode)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = SETUP_Pressed();			// újra r�olvasunk
+			if (s1 != ERMbits.Serv_Mode)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)								// lefut� �l j�tt, elforditott�k a kulcsos kapcsol�t
+				if(s1 ==1)								// lefut� �l j�tt, elforditott�k a kulcsos kapcsolót
 					{
-					ERMbits.Serv_Mode = 1;			// r�gzitj�k, hogy a kulcsos kapcsol� el van forditva
-					send_mess(m_Service_Pressed);		// �zenetet k�ld�nk
-					beep(serv);						// service m�d pittyeg�s
+					ERMbits.Serv_Mode = 1;			// r�gzitj�k, hogy a kulcsos kapcsoló el van forditva
+					send_mess(m_Service_Pressed);		// üzenetet k�ld�nk
+					beep(serv);						// service mód pittyeg�s
 					} else
 					{
-					ERMbits.Serv_Mode = 0;			// a kulcsos kapcsol� alaphelyzetbe �llt
-					send_mess(m_Service_Released);	// �zenetet k�ld�nk
+					ERMbits.Serv_Mode = 0;			// a kulcsos kapcsoló alaphelyzetbe �llt
+					send_mess(m_Service_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 // bor();		////BOR figyeles
 	
-//  Nyom�gombok figyel�se
+//  nyomógombok figyel�se
 	
 		s1 = PageLeft_Pressed();
-		if (s1)					// ha nyomva van, n�velj�k a sz�ml�l�t 
+		if (s1)					// ha nyomva van, n�velj�k a számlálót 
 			{sci++;
 			RM_Count++;
 			if ((RM_Count > RMC_First) && (BUTbits.Page_Left))
@@ -4035,24 +3874,24 @@ sci=0;
 				RM_Count = Button_Repeat;
 				}
 			}
-		if (s1 != BUTbits.Page_Left)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != BUTbits.Page_Left)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = PageLeft_Pressed();			// �jra r�olvasunk
-			if (s1 != BUTbits.Page_Left)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = PageLeft_Pressed();			// újra r�olvasunk
+			if (s1 != BUTbits.Page_Left)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					BUTbits.Page_Left = 1;		// biztosan megj�tt az �rme jel
+					BUTbits.Page_Left = 1;		// biztosan megj�tt az érme jel
 					PageLeftLam_be();
-					send_mess(m_PLeft_Pressed);	// �zenetet k�ld�nk
+					send_mess(m_PLeft_Pressed);	// üzenetet k�ld�nk
 					RM_Count = 0;
 					} else
 					{
-					BUTbits.Page_Left = 0;		// v�get �rt az �rme jel
+					BUTbits.Page_Left = 0;		// v�get �rt az érme jel
 					PageLeftLam_ki();
 					RM_Count = 0;		
-					send_mess(m_PLeft_Released);	// �zenetet k�ld�nk
+					send_mess(m_PLeft_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
@@ -4066,7 +3905,7 @@ sci=0;
 			sci = sci+  Enter_Pressed();
 			sci = sci+ Return_Pressed();
 		
-			if(SFbits.Remote_Present)		// csak akkor n�z�nk t�vvez�rl�t, ha van
+			if(SFbits.Remote_Present)		// csak akkor n�z�nk távvezérlőt, ha van
 				{
 				sci = sci+ Remote_Volup();
 				sci = sci+ Remote_Voldn();
@@ -4074,12 +3913,12 @@ sci=0;
 
 			if (sci > 3 )
 				{
-				eeprom_irhato = 0;				// enged�lyezz�k aqz eeprom ir�st
+				eeprom_irhato = 0;				// engedélyezzük aqz eeprom írást
 				Delayms(500);
 				}
 
 		s1 = StepLeft_Pressed();
-		if (s1)					// ha nyomva van, n�velj�k a sz�ml�l�t 
+		if (s1)					// ha nyomva van, n�velj�k a számlálót 
 			{
 			RM_Count++;
 			if ((RM_Count > RMC_First) && (BUTbits.Step_Left))
@@ -4094,17 +3933,17 @@ sci=0;
 			}
 
 //  bor();		////BOR figyeles
-		if (s1 != BUTbits.Step_Left)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != BUTbits.Step_Left)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = StepLeft_Pressed();			// �jra r�olvasunk
-			if (s1 != BUTbits.Step_Left) 				     // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = StepLeft_Pressed();			// újra r�olvasunk
+			if (s1 != BUTbits.Step_Left) 				     // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)								// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)								// lefut� �l j�tt, érme �rkezik
 					{
-					BUTbits.Step_Left = 1;				// �llapot bejegyz�se
+					BUTbits.Step_Left = 1;				// állapot bejegyz�se
 					StepLeftLam_be();
-					send_mess(m_SLeft_Pressed);		// �zenetet k�ld�nk
+					send_mess(m_SLeft_Pressed);		// üzenetet k�ld�nk
 					RM_Count = 0;
 					if(TVbits.PC_Test_Mode)				// bizonyos esetekben (teszt, setup) pittyeg a gomb
 						{
@@ -4113,9 +3952,9 @@ sci=0;
 
 					} else
 					{
-					BUTbits.Step_Left = 0;				// v�get �rt az �rme jel
+					BUTbits.Step_Left = 0;				// v�get �rt az érme jel
 					StepLeftLam_ki();
-					send_mess(m_SLeft_Released);		// �zenetet k�ld�nk
+					send_mess(m_SLeft_Released);		// üzenetet k�ld�nk
 					RM_Count = 0;
 					}
 				}
@@ -4123,51 +3962,51 @@ sci=0;
 
 // bor();		////BOR figyeles
 		s1 = Return_Pressed();
-		if (s1 != BUTbits.Return)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != BUTbits.Return)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = Return_Pressed();			// �jra r�olvasunk
-			if (s1 != BUTbits.Return)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = Return_Pressed();			// újra r�olvasunk
+			if (s1 != BUTbits.Return)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					BUTbits.Return = 1;		// biztosan megj�tt az �rme jel
+					BUTbits.Return = 1;		// biztosan megj�tt az érme jel
 					ReturnLam_be();
-					send_mess(m_GBack_Pressed);	// �zenetet k�ld�nk
+					send_mess(m_GBack_Pressed);	// üzenetet k�ld�nk
 
 					} else
 					{
-					BUTbits.Return = 0;						// v�get �rt az �rme jel
+					BUTbits.Return = 0;						// v�get �rt az érme jel
 					ReturnLam_ki();
-					send_mess(m_GBack_Released);			// �zenetet k�ld�nk
+					send_mess(m_GBack_Released);			// üzenetet k�ld�nk
 					}
 				}
 			} 
 // bor();		////BOR figyeles	
 		s1 = Enter_Pressed();
-		if (s1 != BUTbits.Enter)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != BUTbits.Enter)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = Enter_Pressed();			// �jra r�olvasunk
-			if (s1 != BUTbits.Enter)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = Enter_Pressed();			// újra r�olvasunk
+			if (s1 != BUTbits.Enter)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					BUTbits.Enter = 1;		// biztosan megj�tt az �rme jel
+					BUTbits.Enter = 1;		// biztosan megj�tt az érme jel
 					EnterLam_be();
-					send_mess(m_GEnter_Pressed);	// �zenetet k�ld�nk
+					send_mess(m_GEnter_Pressed);	// üzenetet k�ld�nk
 
 					} else
 					{
-					BUTbits.Enter = 0;		// v�get �rt az �rme jel
+					BUTbits.Enter = 0;		// v�get �rt az érme jel
 					EnterLam_ki();
-					send_mess(m_GEnter_Released);	// �zenetet k�ld�nk
+					send_mess(m_GEnter_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 // bor();		////BOR figyeles
 		s1 = StepRight_Pressed();
-		if (s1)					// ha nyomva van, n�velj�k a sz�ml�l�t 
+		if (s1)					// ha nyomva van, n�velj�k a számlálót 
 			{
 			RM_Count++;
 			if ((RM_Count > RMC_First) && (BUTbits.Step_Right))
@@ -4182,17 +4021,17 @@ sci=0;
 			}
 
 // bor();		////BOR figyeles
-		if (s1 != BUTbits.Step_Right)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != BUTbits.Step_Right)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = StepRight_Pressed();			// �jra r�olvasunk
-			if (s1 != BUTbits.Step_Right)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = StepRight_Pressed();			// újra r�olvasunk
+			if (s1 != BUTbits.Step_Right)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					BUTbits.Step_Right = 1;		// biztosan megj�tt az �rme jel
+					BUTbits.Step_Right = 1;		// biztosan megj�tt az érme jel
 					StepRightLam_be();
-					send_mess(m_SRight_Pressed);	// �zenetet k�ld�nk
+					send_mess(m_SRight_Pressed);	// üzenetet k�ld�nk
 					RM_Count = 0;
 					if(TVbits.PC_Test_Mode)				// bizonyos esetekben (teszt, setup) pittyeg a gomb
 						{
@@ -4200,9 +4039,9 @@ sci=0;
 						}	
 					} else
 					{
-					BUTbits.Step_Right = 0;				// v�get �rt az �rme jel
+					BUTbits.Step_Right = 0;				// v�get �rt az érme jel
 					StepRightLam_ki();
-					send_mess(m_SRight_Released);		// �zenetet k�ld�nk
+					send_mess(m_SRight_Released);		// üzenetet k�ld�nk
 					RM_Count = 0;
 					}
 				}
@@ -4210,7 +4049,7 @@ sci=0;
 
 // bor();		////BOR figyeles
 		s1 = PageRight_Pressed();
-		if (s1)					// ha nyomva van, n�velj�k a sz�ml�l�t 
+		if (s1)					// ha nyomva van, n�velj�k a számlálót 
 			{
 			RM_Count++;
 			if ((RM_Count > RMC_First) && (BUTbits.Page_Right))
@@ -4221,41 +4060,41 @@ sci=0;
 			}
 
 // bor();		////BOR figyeles
-		if (s1 != BUTbits.Page_Right)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != BUTbits.Page_Right)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = PageRight_Pressed();			// �jra r�olvasunk
-			if (s1 != BUTbits.Page_Right)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = PageRight_Pressed();			// újra r�olvasunk
+			if (s1 != BUTbits.Page_Right)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					BUTbits.Page_Right = 1;		// biztosan megj�tt az �rme jel
+					BUTbits.Page_Right = 1;		// biztosan megj�tt az érme jel
 					PageRightLam_be();
-					send_mess(m_PRight_Pressed);	// �zenetet k�ld�nk
+					send_mess(m_PRight_Pressed);	// üzenetet k�ld�nk
 					RM_Count = 0;
 					} else
 					{
-					BUTbits.Page_Right = 0;		// v�get �rt az �rme jel
+					BUTbits.Page_Right = 0;		// v�get �rt az érme jel
 					PageRightLam_ki();
 					RM_Count = 0;
-					send_mess(m_PRight_Released);	// �zenetet k�ld�nk
+					send_mess(m_PRight_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 
 
-// T�vvez�rl� jelek figyel�se
+// Távvezérlő jelek figyel�se
 // TV0 - 4ch: MUTE, 2ch VOLUP
 // TV1 - 4ch:  VOLUP, 2ch: VOLDOWN
 // TV2 - 4ch: VOLDN, 2ch : NC
 // TV3 - 4ch: 4.GOMB, 2ch: NC
 
 // bor();		////BOR figyeles
-	if(SFbits.Remote_Present)		// csak akkor n�z�nk t�vvez�rl�t, ha van
+	if(SFbits.Remote_Present)		// csak akkor n�z�nk távvezérlőt, ha van
 		{
 
 		s1 = Remote_Volup();
-		if (s1)					// ha nyomva van, n�velj�k a sz�ml�l�t 
+		if (s1)					// ha nyomva van, n�velj�k a számlálót 
 			{
 			RM_Count++;
 //			if ((RM_Count > 25) && (TVbits.Volup) && ((RM_Count & 512) == 1))
@@ -4267,29 +4106,29 @@ sci=0;
 			}
 
 // bor();		////BOR figyeles
-		if (s1 != TVbits.Volup)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != TVbits.Volup)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = Remote_Volup();			// �jra r�olvasunk
-			if (s1 != TVbits.Volup)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = Remote_Volup();			// újra r�olvasunk
+			if (s1 != TVbits.Volup)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					TVbits.Volup = 1;		// biztosan megj�tt az �rme jel
-					send_mess(m_Volup_Pressed);	// �zenetet k�ld�nk
+					TVbits.Volup = 1;		// biztosan megj�tt az érme jel
+					send_mess(m_Volup_Pressed);	// üzenetet k�ld�nk
 					RM_Count = 0;
 					} else
 					{
-					TVbits.Volup = 0;		// v�get �rt az �rme jel
+					TVbits.Volup = 0;		// v�get �rt az érme jel
 					RM_Count = 0;
-					send_mess(m_Volup_Released);	// �zenetet k�ld�nk
+					send_mess(m_Volup_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 
 // bor();		////BOR figyeles
 		s1 = Remote_Voldn();
-		if (s1)					// ha nyomva van, n�velj�k a sz�ml�l�t 
+		if (s1)					// ha nyomva van, n�velj�k a számlálót 
 			{
 			RM_Count++;
 //			if ((RM_Count > 25) && (TVbits.Volup) && ((RM_Count & 512) == 1))
@@ -4299,92 +4138,92 @@ sci=0;
 				RM_Count = RMC_Repeat;
 				}
 			}
-		if (s1 != TVbits.Voldn)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != TVbits.Voldn)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = Remote_Voldn();			// �jra r�olvasunk
-			if (s1 != TVbits.Voldn)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = Remote_Voldn();			// újra r�olvasunk
+			if (s1 != TVbits.Voldn)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					TVbits.Voldn = 1;		// biztosan megj�tt az �rme jel
-					send_mess(m_Voldn_Pressed);	// �zenetet k�ld�nk
+					TVbits.Voldn = 1;		// biztosan megj�tt az érme jel
+					send_mess(m_Voldn_Pressed);	// üzenetet k�ld�nk
 					RM_Count = 0;
 					} else
 					{
-					TVbits.Voldn = 0;		// v�get �rt az �rme jel
+					TVbits.Voldn = 0;		// v�get �rt az érme jel
 					RM_Count = 0;
-					send_mess(m_Voldn_Released);	// �zenetet k�ld�nk
+					send_mess(m_Voldn_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 
-// Mute �s 4. gomb csak a 4ch t�vvez�rl�k�n van
+// Mute és 4. gomb csak a 4ch távvezérlők�n van
 
 // bor();		////BOR figyeles
 	if(!SFbits.Remote_2ch)
 		{
 		s1 = Remote_Mute();
-		if (s1 != TVbits.Mute)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != TVbits.Mute)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = Remote_Mute();			// �jra r�olvasunk
-			if (s1 != TVbits.Mute)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = Remote_Mute();			// újra r�olvasunk
+			if (s1 != TVbits.Mute)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					TVbits.Mute = 1;		// biztosan megj�tt az �rme jel
-					send_mess(m_Volmut_Pressed);	// �zenetet k�ld�nk
-					send_mess(ACK);	// �zenetet k�ld�nk
+					TVbits.Mute = 1;		// biztosan megj�tt az érme jel
+					send_mess(m_Volmut_Pressed);	// üzenetet k�ld�nk
+					send_mess(ACK);	// üzenetet k�ld�nk
 
 					} else
 					{
-					TVbits.Mute = 0;		// v�get �rt az �rme jel
-					send_mess(m_Volmut_Released);	// �zenetet k�ld�nk
+					TVbits.Mute = 0;		// v�get �rt az érme jel
+					send_mess(m_Volmut_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 // bor();		////BOR figyeles
 		s1 = Remote_Vol4b();
-		if (s1 != TVbits.Vol4b)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != TVbits.Vol4b)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = Remote_Vol4b();			// �jra r�olvasunk
-			if (s1 != TVbits.Vol4b)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = Remote_Vol4b();			// újra r�olvasunk
+			if (s1 != TVbits.Vol4b)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					TVbits.Vol4b = 1;		// biztosan megj�tt az �rme jel
-					send_mess(m_vol4b_Pressed);	// �zenetet k�ld�nk
+					TVbits.Vol4b = 1;		// biztosan megj�tt az érme jel
+					send_mess(m_vol4b_Pressed);	// üzenetet k�ld�nk
 
 					} else
 					{
-					TVbits.Vol4b = 0;		// v�get �rt az �rme jel
-					send_mess(m_vol4b_Released);	// �zenetet k�ld�nk
+					TVbits.Vol4b = 0;		// v�get �rt az érme jel
+					send_mess(m_vol4b_Released);	// üzenetet k�ld�nk
 					}
 				}
 			} 
 		} // Remote_2ch
 	} // Remote_Present
 
-// kikapcsol�st kezdem�nyeztek?
+// kikapcsolóst kezdem�nyeztek?
 	s1 = KIBE_Pressed();
-		if (s1 != BUTbits.Ki_Be)      // ha igaz a felt�tel, �lv�lt�s volt 		
+		if (s1 != BUTbits.Ki_Be)      // ha igaz a feltétel, �lv�lt�s volt 		
 			{
 			Delayms(PrellDelay);				// 5 ms prellmentesit�s
-			s1 = KIBE_Pressed();			// �jra r�olvasunk
-			if (s1 != BUTbits.Ki_Be)      // ha m�g mindig igaz a felt�tel, biztos az �lv�lt�s 	
+			s1 = KIBE_Pressed();			// újra r�olvasunk
+			if (s1 != BUTbits.Ki_Be)      // ha m�g mindig igaz a feltétel, biztos az �lv�lt�s 	
 				{
-				if(s1 ==1)					// lefut� �l j�tt, �rme �rkezik
+				if(s1 ==1)					// lefut� �l j�tt, érme �rkezik
 					{
-					BUTbits.Ki_Be = 1;		// biztosan megj�tt az �rme jel
-					send_mess(m_shutdown_rq);	// �zenetet k�ld�nk
+					BUTbits.Ki_Be = 1;		// biztosan megj�tt az érme jel
+					send_mess(m_shutdown_rq);	// üzenetet k�ld�nk
 					beep(off);
-					Delayms(50);				// v�rakozunk, hogy j�jj�n a kikapcs �zenet
+					Delayms(50);				// v�rakozunk, hogy j�jjön a kikapcs üzenet
 		//			Proc_Shutdown();
 					} else
 					{
-					BUTbits.Ki_Be = 0;		// v�get �rt az �rme jel
+					BUTbits.Ki_Be = 0;		// v�get �rt az érme jel
 					}
 				}
 			} 
@@ -4394,8 +4233,8 @@ sci=0;
 
 
 /*********************************************************************************
-* Sz�ml�l�k null�z�sa
-* Jelsz�val v�dett
+* számlálók null�z�sa
+* jelszóval v�dett
 * STX-'n'-Ev1-Ev2-Ho1-Ho2-Nap1-Nap2-P1-P2-P3-P4-CLC-ETX
 *********************************************************************************/
 void	Counter_Reset(void)
@@ -4410,20 +4249,20 @@ void	Counter_Reset(void)
 		CR_Mpl +=  (rxfifo[rxoptr]-'0') * 10; 
 		rxoptr++;
 		rxoptr &= SER_FIFO_MASK;
-		CR_Mpl +=  (rxfifo[rxoptr]-'0');  // d�tum, Ev-ho, pl. 1005
-		rxoptr += 3;					// n�vel�s, plusz k�t karaktert (nap) �tl�p�nk
+		CR_Mpl +=  (rxfifo[rxoptr]-'0');  // dátum, Ev-ho, pl. 1005
+		rxoptr += 3;					// növelés, plusz k�t karaktert (nap) �tl�p�nk
 		rxoptr &= SER_FIFO_MASK;
 		CR_Mpl += 123; 
 
-		 DateStr[0] = CHK_eeprom_read(12);    // byte-onk�nt beolvassuk a szevizd m�sodik fel�t
-		 DateStr[1] = CHK_eeprom_read(13);    // byte-onk�nt beolvassuk a szevizd m�sodik fel�t
-		 DateStr[2] = CHK_eeprom_read(14);    // byte-onk�nt beolvassuk a szevizd m�sodik fel�t
-		 DateStr[3] = CHK_eeprom_read(15);    // byte-onk�nt beolvassuk a szevizd m�sodik fel�t
+		 DateStr[0] = CHK_eeprom_read(12);    // byte-onként beolvassuk a szevizd második fel�t
+		 DateStr[1] = CHK_eeprom_read(13);    // byte-onként beolvassuk a szevizd második fel�t
+		 DateStr[2] = CHK_eeprom_read(14);    // byte-onként beolvassuk a szevizd második fel�t
+		 DateStr[3] = CHK_eeprom_read(15);    // byte-onként beolvassuk a szevizd második fel�t
 
 
 		CR_Pass =  (DateStr[0]-'0') * 1000 + (DateStr[1]-'0') * 100 + (DateStr[2]-'0') * 10 + (DateStr[3]-'0');  // Szervizkod
 		CR_Mpl *= CR_Pass;
-		CR_Mpl = CR_Mpl % 10000;			// az utols� n�gy sz�mjegy kell
+		CR_Mpl = CR_Mpl % 10000;			// az utolsó n�gy számjegy kell
 
 
 		CR_Pass = (rxfifo[rxoptr]-'0') * 1000;
@@ -4439,27 +4278,27 @@ void	Counter_Reset(void)
 		rxoptr++;
 		rxoptr &= SER_FIFO_MASK;
 		
-		if(CR_Pass == CR_Mpl)			// megegyezik a k�ld�tt �s a szamitott jelszo
+		if(CR_Pass == CR_Mpl)			// megegyezik a k�ld�tt és a szamitott jelszo
 			{
-									// ha nincs a h�rom t�rolt jelszo k�z�tt, null�zhatunk
-									// ha null�zunk, a haszn�lt jelszot ki kell irni, a pointert mozgatni.
-			AddrL = pass_area;		// a t�rolt jelszavak beolvas�s�hoz a Booking_Counter-t haszn�ljuk
+									// ha nincs a három t�rolt jelszo k�z�tt, null�zhatunk
+									// ha null�zunk, a használt jelszot ki kell irni, a pointert mozgatni.
+			AddrL = pass_area;		// a t�rolt jelszavak beolvasás�hoz a Booking_Counter-t használjuk
 			for(s1= 0;  s1 < 6; s1++)	
 				{
 				Booking_Counter.cnumbyte[s1] = CHK_eeprom_read(AddrL);
 				AddrL++;
 				}
 
-			s2 = 1;						// =1, ha m�g nem haszn�ltuk a jelsz�t
-		 	s3 = CHK_eeprom_read(passptr_addr);    // a k�vetkez� cim, ahov� a haszn�lt jelsz� kiirhato, s3-ban a passptr	
-			if (Booking_Counter.Hosszu_LInt == CR_Mpl) { s2 = 0; }			// m�r haszn�ltuk ezt a jelszot
-			if (Booking_Counter.Hosszu_MInt == CR_Mpl) { s2 = 0; }	// m�r haszn�ltuk ezt a jelszot
-			if (Booking_Counter.Rovid_LInt == CR_Mpl) { s2 = 0; }	// m�r haszn�ltuk ezt a jelszot
+			s2 = 1;						// =1, ha m�g nem használtuk a jelszót
+		 	s3 = CHK_eeprom_read(passptr_addr);    // a következő cim, ahov� a használt jelszó kiirhato, s3-ban a passptr	
+			if (Booking_Counter.Hosszu_LInt == CR_Mpl) { s2 = 0; }			// m�r használtuk ezt a jelszot
+			if (Booking_Counter.Hosszu_MInt == CR_Mpl) { s2 = 0; }	// m�r használtuk ezt a jelszot
+			if (Booking_Counter.Rovid_LInt == CR_Mpl) { s2 = 0; }	// m�r használtuk ezt a jelszot
 				
-				if (s2)		// s2 = 1, ha jo jelszot k�ldtek, �s m�g nem haszn�ltuk
+				if (s2)		// s2 = 1, ha jo jelszot k�ldtek, és m�g nem használtuk
 					{
 
-				switch(s3)		// csak akkor irjuk ki a kapott jelszot, ha jo, �s m�g nem haszn�ltuk
+				switch(s3)		// csak akkor irjuk ki a kapott jelszot, ha jo, és m�g nem használtuk
 				{
 				case 250: 	{ 
 					eeprom_irhato = 1;
@@ -4495,9 +4334,9 @@ void	Counter_Reset(void)
 				break;
 				} // switch
 
-					Counter.Hosszu = 0;				// null�zzuk a sz�ml�l�kat
+					Counter.Hosszu = 0;				// nullázzuk a számlálókat
 					Counter.Rovid = 0;
-					EEPROM_Counters_Write();			// kiirjuk az uj �rt�ket
+					EEPROM_Counters_Write();			// kiirjuk az uj értéket
 					putch(STX);				// null�ztunk, pozitiv nyugta
 					putch(ACK);
 					putch(ETX);		
@@ -4506,7 +4345,7 @@ void	Counter_Reset(void)
 					putch(STX);				// nem null�ztunk, negativ nyugta
 					putch(NAK);
 					putch(ETX);
-					}	// nem null�ztunk haszn�lt jelszo miatt
+					}	// nem null�ztunk használt jelszo miatt
 			}
 			else
 			{
@@ -4519,24 +4358,24 @@ void	Counter_Reset(void)
 
 			rxoptr++;						// ETX �tl�ptet�se
 			rxoptr &= SER_FIFO_MASK;
-			Dec_RX_Msg();					// �zenet kezelve
+			Dec_RX_Msg();					// üzenet kezelve
 
 
 } // end of Counter_Reset
 
 /**********************************************************************************
-* T�vvez�rl� jelenl�t�nek vizsg�lata
+* Távvezérlő jelenl�t�nek vizsg�lata
 **********************************************************************************/
 void		Remote_Present(void)	
 {
-		SFbits.Remote_Present = 1;			// most ugy vessz�k, hogy van, null�zzuk, ha nincs
+		SFbits.Remote_Present = 1;			// most ugy vessz�k, hogy van, nullázzuk, ha nincs
 		s1 = Remote_Volup();
 	 		if(s1)
 				{
 				s1 = Remote_Voldn();
 				if(s1)
 					{
-					SFbits.Remote_Present = 0;  // mind a k�t bemenet magas, nincs t�vvez�rl�
+					SFbits.Remote_Present = 0;  // mind a k�t bemenet magas, nincs távvezérlő
 					} // Voldn
 				} // Volup
 	
@@ -4549,7 +4388,7 @@ void		Remote_Present(void)
 *  F�program
 *
 *********************************************************************************/
-			// ide ugrik reset ut�n
+			// ide ugrik reset után
 void main (void)
 
 {
@@ -4570,14 +4409,14 @@ if	(oldhw)
 	Init_New_Ports();
 	}
 
-	Init_HW();					// Innent�l egyforma a r�gi �s az uj hw kezel�se
+	Init_HW();					// Innent�l egyforma a régi és az uj hw kezelése
 
 	init_usart();
 
 
-	SPEN = 0;			// egyel�re tiltjuk a felkonfigur�lt soros portot
+	SPEN = 0;			// egyelére tiltjuk a felkonfigur�lt soros portot
 	TXEN = 0;			// tiltjuk a soros ad�st
-	TXIE = 0;				// tiltjuk az ad�s megszakit�s k�r�s�t
+	TXIE = 0;				// tiltjuk az ad�s megszakit�s kérés�t
 
 	// Timer 0 init
 	T0CS=0;	//Internal instruction cycle clock
@@ -4585,51 +4424,51 @@ if	(oldhw)
 	PS0=1;	//Prescaler 256
 	PS1=1;
 	PS2=1;
-	T0IE= 0;			//TIMER0 megszakitas enged�lyez�s 
+	T0IE= 0;			//TIMER0 megszakitas engedélyezés 
 	TMR0IE = 0;
-	T0IF= 0;			//esetlegesTIMER0 megszakitas t�rl�s	
+	T0IF= 0;			//esetlegesTIMER0 megszakitas törlés	
 //timer1 init
 
 // T1CON = 0b00000001;	//TIMER1_ON_16BIT_ T0CKI _ ELO OSZTO 1_FOSC/4
-	TMR1IE=0;			//TIMER1 megszakitas enged�lyez�s 
+	TMR1IE=0;			//TIMER1 megszakitas engedélyezés 
 BOR=1;
 POR=1;
 RCIF=0;
-//	SFbits.In_Msg = 0;				// =1 ha �pp van bej�v� �zenet
-//	SFbits.Clear_Credit = 0;			// Alaphelyzetben nincs kerdit t�rl�s, tesztre van, a gombnyom�s hossza �ll�tja
-//	SFbits.Keyboard_Enable = 0;		// Alaphelyzetben nincs bill. t�mogat�s DIP kapcsol� �ll�tja
-//	SFbits.Remote_Present = 0;		// =1, ha van bedugva t�vvez�rl� a foglalatba
+//	SFbits.In_Msg = 0;				// =1 ha �pp van bejövő üzenet
+//	SFbits.Clear_Credit = 0;			// Alaphelyzetben nincs kerdit törlés, tesztre van, a gombnyomás hossza állítja
+//	SFbits.Keyboard_Enable = 0;		// Alaphelyzetben nincs bill. t�mogat�s DIP kapcsoló állítja
+//	SFbits.Remote_Present = 0;		// =1, ha van bedugva távvezérlő a foglalatba
 	SFbits.x	= 0;			// inicializ�l�s
 
-	RX_Msg = 0;				//  M�g nincs bej�v� �zenet
-	ERMbits.x = 0;					// bemeneti �llapotok nyilv�ntart�s�nak t�rl�se
-	BadButBits.x = 64;				// Nyom�gombok �llapot�nak nyilv�ntart�sa
-	BUTbits.x = 0;					// Nyom�gombok �llapot�nak nyilv�ntart�sa
-	TVbits.x = 0;					// T�vvez�rl� gombok �llapot�nak nyilv�ntart�sa
+	RX_Msg = 0;				//  M�g nincs bejövő üzenet
+	ERMbits.x = 0;					// bemeneti állapotok nyilvántart�s�nak törlése
+	BadButBits.x = 64;				// nyomógombok állapot�nak nyilvántart�sa
+	BUTbits.x = 0;					// nyomógombok állapot�nak nyilvántart�sa
+	TVbits.x = 0;					// Távvezérlő gombok állapot�nak nyilvántart�sa
 	TVbits.PC_Logged = 0;			// m�g nem jelentkezett be a pc; (a BUTbits.x ezt is null�zza)
-	Wrts = 0;						// Error uzenet, kezd��rt�ke nulla
+	Wrts = 0;						// Error uzenet, kezdőértéke nulla
 //	Counter.Hosszu = 0x11223344;
 //	Counter.Rovid = 0x55667788;
 
 	s1 = RCREG;
 	s1 = RCREG;
-	s1 = RCREG;			// a kezdeti bej�v� k�bor karaktereket eldobjuk
+	s1 = RCREG;			// a kezdeti bejövő k�bor karaktereket eldobjuk
 	rxiptr = rxoptr = 0;
 	RCIF = 0;				// ha volt is karakter, t�r�lj�k
 
-	SPEN = 1;			// enged�lyezz�k soros portot
-	TXEN = 1;			// enged�lyezz�k a soros ad�st
+	SPEN = 1;			// engedélyezzük soros portot
+	TXEN = 1;			// engedélyezzük a soros ad�st
 
-	ei();					// enged�lyezz�k a megszakit�sokat
+	ei();					// engedélyezzük a megszakit�sokat
  
-// KI-BE gomb kiker�l�se
+// KI-BE gomb kikerül�se
 
-	s1 =  0;						// ciklusv�ltoz� init
+	s1 =  0;						// ciklusváltoz� init
 	while (s1 < 50)					// 50-szer r�olvasunk
 		{
-		s2 = KIBE_Pressed();		// v�rjuk, hogy megnyomj�k a ki-be gombot
+		s2 = KIBE_Pressed();		// várjuk, hogy megnyomj�k a ki-be gombot
 		s1++;
-		if (s2 == 0)				// ha nincs megnyomva, null�zzuk a ciklusv�ltoz�t
+		if (s2 == 0)				// ha nincs megnyomva, nullázzuk a ciklusváltoz�t
 			{
 			s1 = 0;
 			} else
@@ -4638,13 +4477,13 @@ RCIF=0;
 			} // end of if
 		} // end of while
 	
-		erme_lam_on();			// �rmeajt� l�mpa bekapcs
-		kibe_lam_on();				// h�ts� nyom�gomb l�mpa bekapcs
-		beep(ok);					// KI-BE gomb megnyom�s�nak jelz�se
+		erme_lam_on();			// érmeajtó lámpa bekapcs
+		kibe_lam_on();				// h�ts� nyomógomb lámpa bekapcs
+		beep(ok);					// KI-BE gomb megnyomás�nak jelzése
 
-// Nyomj�k a KI-BE gombot, megn�zz�k, meddig nyomj�k
-	s1 =  0;						// ciklusv�ltoz� init
-	s2 = KIBE_Pressed();			// v�rjuk, hogy megnyomj�k a ki-be gombot
+// Nyomj�k a KI-BE gombot, megnézzük, meddig nyomj�k
+	s1 =  0;						// ciklusváltoz� init
+	s2 = KIBE_Pressed();			// várjuk, hogy megnyomj�k a ki-be gombot
 	while (s2)						// amig nyomj�k, addig tart ez a ciklus
 		{
 		s1++;
@@ -4655,148 +4494,148 @@ RCIF=0;
 			} else
 			{
 			} // end of if
-		Delayms(100);		//  100 ms delay * 50 ciklus = 5 sec kell a kredit t�rl�shez
-		s2 = KIBE_Pressed();		// v�rjuk, hogy elengedj�k a ki-be gombot
+		Delayms(100);		//  100 ms delay * 50 ciklus = 5 sec kell a kredit törléshez
+		s2 = KIBE_Pressed();		// várjuk, hogy elengedj�k a ki-be gombot
 		} // end of while
 
-// ki-be gomb kiker�l�s v�ge
+// ki-be gomb kikerül�s v�ge
 
 			pctap_be();		// mehet a PC t�p
-			Delayms(1000);	// v�runk
+			Delayms(1000);	// várunk
 
 			atxst_pulse();		// 3 impulzust adunk ra
-			Delayms(500);	// v�runk, hogy �ledjen a t�p
+			Delayms(500);	// várunk, hogy �ledjen a t�p
 
 		s1 = PC12V();
 
 		while (!s1)							// amig nem �led fel a t�p, itt kering
 			{
 			beep(error);
-			atxst_pulse();		// �jra 3 impulzust adunk
-			Delayms(500);	// v�runk, hogy �ledjen a t�p
+			atxst_pulse();		// újra 3 impulzust adunk
+			Delayms(500);	// várunk, hogy �ledjen a t�p
 
 			s1 = PC12V();
 			}
 
 		mute_be();		// mute legyen
 			//	montap_be
-		run_led_on();		//  Start LED bekapcsol�sa (ON �llapot)
+		run_led_on();		//  Start LED bekapcsolósa (ON állapot)
 
 
-// A soros v�teli pufferben l�v� �zenetek eldob�sa
+// A soros v�teli pufferben lévő üzenetek eldob�sa
 
-		SFbits.In_Msg = 0;				// =1 ha �pp van bej�v� �zenet
+		SFbits.In_Msg = 0;				// =1 ha �pp van bejövő üzenet
 		RX_Msg = 0;
 		rxiptr = rxoptr = 0;
 	
-// nyomogombok indul�skori beragad�s�t ellen�rz� r�sz
+// nyomogombok induláskori beragad�s�t ellenőrző r�sz
 
 		s1 = PageLeft_Pressed();
-		if (s1)									// ha nyomva van, �jra r�olvasunk
+		if (s1)									// ha nyomva van, újra r�olvasunk
 			{
-			Delayms(30);							// kis k�sleltet�s �jraolvas�s el�tt
+			Delayms(30);							// kis késleltetés újraolvasás el�tt
 			s1 = PageLeft_Pressed();
 			if (s1)									// 
 				{
-				BadButBits.Page_Left = 1;			// k�nyvelj�k, hogy beragadt
+				BadButBits.Page_Left = 1;			// könyveljük, hogy beragadt
 				}
 			}
 
 		s1 = PageRight_Pressed();
-		if (s1)									// ha nyomva van, �jra r�olvasunk
+		if (s1)									// ha nyomva van, újra r�olvasunk
 			{
-			Delayms(30);							// kis k�sleltet�s �jraolvas�s el�tt
+			Delayms(30);							// kis késleltetés újraolvasás el�tt
 			s1 = PageRight_Pressed();
 			if (s1)									// 
 				{
-				BadButBits.Page_Right = 1;			// k�nyvelj�k, hogy beragadt
+				BadButBits.Page_Right = 1;			// könyveljük, hogy beragadt
 				}
 			}
 
 		s1 = StepLeft_Pressed();
-		if (s1)									// ha nyomva van, �jra r�olvasunk
+		if (s1)									// ha nyomva van, újra r�olvasunk
 			{
-			Delayms(30);							// kis k�sleltet�s �jraolvas�s el�tt
+			Delayms(30);							// kis késleltetés újraolvasás el�tt
 			s1 = StepLeft_Pressed();
 			if (s1)									// 
 				{
-				BadButBits.Step_Left = 1;			// k�nyvelj�k, hogy beragadt
+				BadButBits.Step_Left = 1;			// könyveljük, hogy beragadt
 				}
 			}
 
 
 		s1 = StepRight_Pressed();
-		if (s1)									// ha nyomva van, �jra r�olvasunk
+		if (s1)									// ha nyomva van, újra r�olvasunk
 			{
-			Delayms(30);							// kis k�sleltet�s �jraolvas�s el�tt
+			Delayms(30);							// kis késleltetés újraolvasás el�tt
 			s1 = StepRight_Pressed();
 			if (s1)									// 
 				{
-				BadButBits.Step_Right = 1;			// k�nyvelj�k, hogy beragadt
+				BadButBits.Step_Right = 1;			// könyveljük, hogy beragadt
 				}
 			}
 
 		s1 = Enter_Pressed();
-		if (s1)									// ha nyomva van, �jra r�olvasunk
+		if (s1)									// ha nyomva van, újra r�olvasunk
 			{
-			Delayms(30);							// kis k�sleltet�s �jraolvas�s el�tt
+			Delayms(30);							// kis késleltetés újraolvasás el�tt
 			s1 = Enter_Pressed();
 			if (s1)								// 
 				{
-				BadButBits.Enter = 1;				// k�nyvelj�k, hogy beragadt
+				BadButBits.Enter = 1;				// könyveljük, hogy beragadt
 				}
 			}
 
 
 		s1 = Return_Pressed();
-		if (s1)									// ha nyomva van, �jra r�olvasunk
+		if (s1)									// ha nyomva van, újra r�olvasunk
 			{
-			Delayms(30);							// kis k�sleltet�s �jraolvas�s el�tt
+			Delayms(30);							// kis késleltetés újraolvasás el�tt
 			s1 = Return_Pressed();
 			if (s1)								// 
 				{
-				BadButBits.Return = 1;				// k�nyvelj�k, hogy beragadt
+				BadButBits.Return = 1;				// könyveljük, hogy beragadt
 				}
 			}
 
-		if(BadButBits.x != 64)					// beragadt gombn�l hibajelz�s
+		if(BadButBits.x != 64)					// beragadt gombn�l hibajelzés
 			{
 			beep(error);
 			Delayms(200);
 			beep(error);
 			}
 
-		// DIP kapcsol� be�ll�t�sok beolvas�sa
-		SFbits.Keyboard_Enable = DIP_Keyboard();		// =1 legyen, ha haszn�lhat� a bill., 0, ha nem
-		SFbits.Long_Switchoff = DIP_Longoff();			// =1, ha hosszabb id� m�lva kapcsoljuk ki a PC-t (XP)
+		// DIP kapcsoló beállít�sok beolvasása
+		SFbits.Keyboard_Enable = DIP_Keyboard();		// =1 legyen, ha használhat� a bill., 0, ha nem
+		SFbits.Long_Switchoff = DIP_Longoff();			// =1, ha hosszabb id� múlva kapcsoljuk ki a PC-t (XP)
 		SFbits.Monitor_Always_On = DIP_Monitor();		// =1, ha a monitort azonnal be kell kapcsolni
-		SFbits.Remote_2ch = DIP_2ch_Remote();		// =1, ha k�tcsatorn�s t�vvez�rl� van a g�phez
+		SFbits.Remote_2ch = DIP_2ch_Remote();		// =1, ha kétcsatornás távvezérlő van a géphez
 
 	if (SFbits.Monitor_Always_On)
 		{
 		montap_be();							// DIP8 - a monitor kapcsolodjon be
-		Delayms(400);						// monitor bekapcso ut�n biztons�gi v�rakoz�s
+		Delayms(400);						// monitor bekapcso után biztons�gi v�rakoz�s
 		}
 
 
-	s1 = CHK_eeprom_read(EEChkAddr);		// beolvassuk az EEPROM-b�l, hogy el�sz�r fut-e a chip
+	s1 = CHK_eeprom_read(EEChkAddr);		// beolvassuk az EEPROM-b�l, hogy először fut-e a chip
 		if(s1 == 0xAA)
 			{
-			BUTbits.Chip_First_Run = 1;		// =1, el�sz�r fut a  a chip
+			BUTbits.Chip_First_Run = 1;		// =1, először fut a  a chip
 			}
 
-	// v�runk a PC bejelentkez�s�re
+	// várunk a PC bejelentkezés�re
 	// ha nem jelentkezik be x percig, bekapcsuljuk a monitort
 
-		Delayms(500);				// v�rjuk, hogy biztosan fel�ledjen a t�pegys�g
-		Remote_Present();			// megn�zz�k, hogy van-e t�vvez�rl�
+		Delayms(500);				// várjuk, hogy biztosan fel�ledjen a tápegység
+		Remote_Present();			// megnézzük, hogy van-e távvezérlő
 
-	RM_Count = 0;					// ez m�ri majd a 3 percet --> monitor bekapcsol�s
-	s2 = 0;					// villogtat�s ciklusv�ltoz�ja
+	RM_Count = 0;					// ez m�ri majd a 3 percet --> monitor bekapcsolós
+	s2 = 0;					// villogtat�s ciklusváltoz�ja
 
-while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SETUP-ot �s a sz�ml�l�kat �tadtuk
+while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SETUP-ot és a számlálókat �tadtuk
 	{
-	while(!RX_Msg)			// v�r egy bej�v� �zenetet
+	while(!RX_Msg)			// v�r egy bejövő üzenetet
 		{
 		Delayms(13);
 		s2++;
@@ -4826,7 +4665,7 @@ while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SET
 		SFbits.Monitor_Always_On = DIP_Monitor();		// megn�zi, kell-e monitort bekapcsolni
 		if ((SFbits.Monitor_Always_On) || (RM_Count > 12000 ))	// ez kb. 3 perc
 			{
-			montap_be();							// DIP8 - ra azonnali monitor bekapcsol�s
+			montap_be();							// DIP8 - ra azonnali monitor bekapcsolós
 //			Delayms(500);
 			}
 	
@@ -4834,84 +4673,84 @@ while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SET
 
 	if (RX_Msg)					// message handler 1
 	{
-	rxoptr++;						// STX �tl�p�se
-	rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-	Cmd = rxfifo[rxoptr];			// a puffer k�vetkez� karaktere a parancs
-	rxoptr++;						// STX �tl�p�se
-	rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
+	rxoptr++;						// STX átlépése
+	rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
+	Cmd = rxfifo[rxoptr];			// a puffer következő karaktere a parancs
+	rxoptr++;						// STX átlépése
+	rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
 
 	switch(Cmd) {
-		case m_setup_send : // bej�v� setup adathalmaz
+		case m_setup_send : // bejövő setup adathalmaz
 		{
 		Get_Setup();
-		rxoptr++;						// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-		Dec_RX_Msg();					// �zenet kezelve
+		rxoptr++;						// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
+		Dec_RX_Msg();					// üzenet kezelve
 		Delayms(20);					// k�ldt�nk egy nyugt�t, hadd kezelje le a PC
-		send_mess(m_counters_rq);		// sz�ml�l� adatokat is k�r�nk
+		send_mess(m_counters_rq);		// számláló adatokat is k�r�nk
 		}
 		break;
 
-		case m_counters_send : // bej�v� sz�ml�l� �ll�sok
+		case m_counters_send : // bejövő számláló állások
 		{
 		Get_Counters();
-//		send_mess(m_counters_rq);		// sz�ml�l� adatokat is k�r�nk
-		TVbits.PC_Logged = 1;	// A PC bejelentkezett, a sz�ml�l�kat �s a SETUP-ot �tadta/�tvette
+//		send_mess(m_counters_rq);		// számláló adatokat is k�r�nk
+		TVbits.PC_Logged = 1;	// A PC bejelentkezett, a számlálókat és a SETUP-ot �tadta/�tvette
 		}
 		break;
 
-//		case m_setup_rq : // bej�v� k�r�s setup k�ld�s�re (nem lesz ilyen a PC fel�l)
+//		case m_setup_rq : // bejövő kérés setup küldés�re (nem lesz ilyen a PC fel�l)
 //		{
-//		Send_Setup();		// Setup adathalmaz k�ld�se
+//		Send_Setup();		// Setup adathalmaz küldése
 //		}
 //		break;
 	
-		case m_login : // A 'i'	PC bejelentkez� �zenete
+		case m_login : // A 'i'	PC bejelentkez� üzenete
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();					// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();					// üzenet kezelve
 		montap_be();						// monitort bekapcsoljuk
 		Delayms(400);
-		Send_HW_Init();					// bejelentkez�sre k�ldj�k a init-et
+		Send_HW_Init();					// bejelentkezésre k�ldj�k a init-et
 		amptap_be();
 		TVbits.PC_On = 1;					// bejelentkezett a PC, kezdodik az adatcsere
 		}
 		break;
 
-		case 'R' : // A PC jelzi az init �zenet ut�n, hogy nem akar BIOS-t t�lteni
+		case 'R' : // A PC jelzi az init üzenet után, hogy nem akar BIOS-t t�lteni
 			{	
-			rxoptr++;							// ETX �tl�p�se
-			rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-			Dec_RX_Msg();					// �zenet kezelve
+			rxoptr++;							// ETX átlépése
+			rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+			Dec_RX_Msg();					// üzenet kezelve
 			mute_ki();
-			if (BUTbits.Chip_First_Run)	// ha el�sz�r fut a chip, SETUP-ot is k�r
+			if (BUTbits.Chip_First_Run)	// ha először fut a chip, SETUP-ot is k�r
 				{
 				send_mess(m_setup_rq);
 				}	else
 				{
-				Send_Setup();		//  ha nem el�sz�r fut, akkor k�ldi a SETUP-ot
-			//	Send_Counters();	// a sz�ml�l� �ll�sokat is k�ldj�k
-				TVbits.PC_Logged = 1;	// A PC bejelentkezett, a sz�ml�l�kat �s a SETUP-ot �tadta/�tvette
+				Send_Setup();		//  ha nem először fut, akkor k�ldi a SETUP-ot
+			//	Send_Counters();	// a számláló állásokat is k�ldj�k
+				TVbits.PC_Logged = 1;	// A PC bejelentkezett, a számlálókat és a SETUP-ot �tadta/�tvette
 				}
 			}
 		break;
 
-		case 'r' : // A PC jelzi az init �zenet ut�n, hogy BIOS-t akar t�lteni
+		case 'r' : // A PC jelzi az init üzenet után, hogy BIOS-t akar t�lteni
 			{	
-			rxoptr++;							// ETX �tl�p�se
-			rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-			Dec_RX_Msg();					// �zenet kezelve
+			rxoptr++;							// ETX átlépése
+			rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+			Dec_RX_Msg();					// üzenet kezelve
 			// mute_ki();
 			DownloadCode();					// BIOS friss�t� rutin
 			}
 		break;
 
-		case m_mute_on : // 'u' - A PC k�relme MUTE bekapcsol�sra
+		case m_mute_on : // 'u' - A PC k�relme MUTE bekapcsolósra
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();						// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();						// üzenet kezelve
 		mute_be();
 		putch(STX);
 		putch(ACK);
@@ -4919,11 +4758,11 @@ while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SET
 		}
 		break;
 
-		case m_mute_off : // 'U' A PC k�relme MUTE kikapcsol�sra
+		case m_mute_off : // 'U' A PC k�relme MUTE kikapcsolósra
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();						// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();						// üzenet kezelve
 		mute_ki();
 		putch(STX);
 		putch(ACK);
@@ -4931,30 +4770,30 @@ while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SET
 		}
 		break;
 
-		case m_counters_rq : // 'g' - k�relem sz�ml�l� �ll�sok k�ld�s�re a PC fel�l 
+		case m_counters_rq : // 'g' - kérelem számláló állások küldés�re a PC fel�l 
 			{
 			Send_Counters();
-			rxoptr++;							// ETX �tl�p�se
-			rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-			Dec_RX_Msg();						// �zenet kezelve
-			Wait_For_Ack();			// megv�rjuk a nyugt�t
-			Delayms(10);				// k�sleltet�s
+			rxoptr++;							// ETX átlépése
+			rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+			Dec_RX_Msg();						// üzenet kezelve
+			Wait_For_Ack();			// megvárjuk a nyugt�t
+			Delayms(10);				// késleltetés
 			}	// end of case
 			break;
 
 
-	 	default:   							// a m�shol fel nem dolgozott �zenetek
+	 	default:   							// a m�shol fel nem dolgozott üzenetek
  		{								 
 			while (rxfifo[rxoptr] != ETX)	
 				{
 				 rxoptr++;
-				 rxoptr &= SER_FIFO_MASK;		// megkeress�k az �zenet v�g�t
+				 rxoptr &= SER_FIFO_MASK;		// megkeress�k az üzenet v�g�t
 				}		
 				 rxoptr++;
-				 rxoptr &= SER_FIFO_MASK;		// ETX �tl�p�se
-				Dec_RX_Msg();					// �zenet kezelve
+				 rxoptr &= SER_FIFO_MASK;		// ETX átlépése
+				Dec_RX_Msg();					// üzenet kezelve
   
-			putch(STX);				// nem �rtelmezett �zenet
+			putch(STX);				// nem �rtelmezett üzenet
 			putch(NAK);
 			putch(ETX);
 
@@ -4965,12 +4804,12 @@ while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SET
 
 		} // end of switch
 
-		if(rxiptr < rxoptr)	// v�rjuk, hogy elromlik-e a mutat�
+		if(rxiptr < rxoptr)	// várjuk, hogy elromlik-e a mutat�
 			{
 			s1 = s2;
 			}
 
-		if(ForcedMuteOff)		// ha szakadt �zenet j�tt be, a mute-t kikapcsoljuk
+		if(ForcedMuteOff)		// ha szakadt üzenet j�tt be, a mute-t kikapcsoljuk
 			{
 			mute_ki();
 			ForcedMuteOff = 0;
@@ -4986,14 +4825,14 @@ while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SET
 		eeprom_irhato = 1;
 		CHK_eeprom_write(EEChkAddr, 0x55);		// EEPROM-ba �rjuk, hogy inicializ�ltuk a chipet
 		eeprom_irhato = 0;
-		BUTbits.Chip_First_Run = 0;		// jelezz�k, hogy m�r nem el�sz�r fut a chip
+		BUTbits.Chip_First_Run = 0;		// jelezzük, hogy m�r nem először fut a chip
 		}
 
 
-	EEPROM_CH_Read();				// �rmecsatorna - p�nz�rt�k t�bl�zat bet�lt�se
-	EEPROM_Counters_Read();			// sz�ml�l� �ll�sok bet�lt�se
+	EEPROM_CH_Read();				// érmecsatorna - pénzérték t�bl�zat bet�lt�se
+	EEPROM_Counters_Read();			// számláló állások bet�lt�se
 
-	ermtilt_ki();		// Elektromos �rmevizsg�l� enged�lyez�se
+	ermtilt_ki();		// Elektromos érmevizsgáló engedélyezése
 
 	sleep_led_off();		// G�p elindult
 	run_led_on();
@@ -5003,16 +4842,16 @@ while(!TVbits.PC_Logged)		// Akkor tekintj�k bejelentkezettnek a PC-t ha a SET
 
 while(1)
 	{
-	while(!RX_Msg)		// v�r egy bej�v� �zenetet
+	while(!RX_Msg)		// v�r egy bejövő üzenetet
 		{
 		Scan_Inputs();
 		SFbits.Monitor_Always_On = DIP_Monitor();		// megn�zi, kell-e monitort bekapcsolni
 		if (SFbits.Monitor_Always_On)
 			{
-			montap_be();							// DIP8 - ra azonnali monitor bekapcsol�s
+			montap_be();							// DIP8 - ra azonnali monitor bekapcsolós
 //			Delayms(500);
 			}
-	//	Counter.Hosszu++;		// n�velj�k a sz�ml�l�kat, hogy mozg�st l�ssunk
+	//	Counter.Hosszu++;		// n�velj�k a számlálókat, hogy mozg�st l�ssunk
 	//	Counter.Rovid++;
 		}
 
@@ -5022,88 +4861,88 @@ while(1)
 
 	{
 
-	rxoptr++;					// STX �tl�p�se
-	rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-	Cmd = rxfifo[rxoptr];			// a puffer k�vetkez� karaktere a parancs
-	rxoptr++;						// STX �tl�p�se
-	rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
+	rxoptr++;					// STX átlépése
+	rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
+	Cmd = rxfifo[rxoptr];			// a puffer következő karaktere a parancs
+	rxoptr++;						// STX átlépése
+	rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
 
 	switch(Cmd) {
-		case m_setup_send : // bej�v� setup adathalmaz
+		case m_setup_send : // bejövő setup adathalmaz
 		{
 		Get_Setup();
-		// ETX �tl�p�se kezelve a rutinban
-		// az ch-�rme �sszerendel�s t�mbj�t �jrat�lteni
-		rxoptr++;						// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-		Dec_RX_Msg();				// �zenet kezelve
-		EEPROM_CH_Read();			// �rmecsatorna - p�nz�rt�k t�bl�zat bet�lt�se
+		// ETX átlépése kezelve a rutinban
+		// az ch-érme ésszerendel�s t�mbj�t újrat�lteni
+		rxoptr++;						// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
+		Dec_RX_Msg();				// üzenet kezelve
+		EEPROM_CH_Read();			// érmecsatorna - pénzérték t�bl�zat bet�lt�se
 
 		}
 		break;
 
-//		case m_setup_rq : // bej�v� k�r�s setup k�ld�s�re (nem lesz ilyen a PC fel�l)
+//		case m_setup_rq : // bejövő kérés setup küldés�re (nem lesz ilyen a PC fel�l)
 //		{
-//		Send_Setup();		// Setup adathalmaz k�ld�se
+//		Send_Setup();		// Setup adathalmaz küldése
 //		}
 //		break;
 	
-//		case m_login : // A PC bejelentkez� �zenete		// El�z� messagehandler kezeli
+//		case m_login : // A PC bejelentkez� üzenete		// El�z� messagehandler kezeli
 //		{
 //		montap_be();		// monitort bekapcsoljuk
-//		Send_HW_Init();	// bejelentkez�sre k�ldj�k a init-et
+//		Send_HW_Init();	// bejelentkezésre k�ldj�k a init-et
 //		amptap_be();
 //		}
 //		break;
 
-//		case 'G' : // sz�ml�l� �ll�sok a PC fel�l - ASCII-b�l kell dek�dolni, �s EEPROM-ba �rni
-//			{					// Ez csak a chip els� fut�sakor fordul el�
+//		case 'G' : // számláló állások a PC fel�l - ASCII-b�l kell dek�dolni, és EEPROM-ba �rni
+//			{					// Ez csak a chip első futásakor fordul el�
 //			Get_Counters();
 //			}
 //		break;
 
-		case m_counters_rq : // 'g' - k�relem sz�ml�l� �ll�sok k�ld�s�re a PC fel�l 
+		case m_counters_rq : // 'g' - kérelem számláló állások küldés�re a PC fel�l 
 			{
 			Send_Counters();
-			rxoptr++;							// ETX �tl�p�se
-			rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-			Dec_RX_Msg();						// �zenet kezelve
-			Wait_For_Ack();			// megv�rjuk a nyugt�t
-			Delayms(10);				// k�sleltet�s
+			rxoptr++;							// ETX átlépése
+			rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+			Dec_RX_Msg();						// üzenet kezelve
+			Wait_For_Ack();			// megvárjuk a nyugt�t
+			Delayms(10);				// késleltetés
 			}	// end of case
 			break;
 
 
-//		case 'r' : // BIOS t�lt�si sz�nd�k �zenete a PC fel�l
+//		case 'r' : // BIOS t�lt�si sz�nd�k üzenete a PC fel�l
 //		{
 		// Send_Mess2(22);
 //		}
 //		break;
 
-//		case 'R' : // A PC jelzi az init �zenet ut�n, hogy nem akar BIOS-t t�lteni
+//		case 'R' : // A PC jelzi az init üzenet után, hogy nem akar BIOS-t t�lteni
 //			{	
 //			mute_ki();
-//			Send_Setup();		// Setup adathalmaz k�ld�se
+//			Send_Setup();		// Setup adathalmaz küldése
 //			}
 //		break;
 
-		case m_login : // A 'i'	PC bejelentkez� �zenete
+		case m_login : // A 'i'	PC bejelentkez� üzenete
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();					// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();					// üzenet kezelve
 //		montap_be();						// monitort bekapcsoljuk
-		Send_HW_Init();					// bejelentkez�sre k�ldj�k a init-et
+		Send_HW_Init();					// bejelentkezésre k�ldj�k a init-et
 //		amptap_be();
 //		TVbits.PC_On = 1;					// bejelentkezett a PC, kezdodik az adatcsere
 		}
 		break;
 
-		case m_mute_on : // 'u' - A PC k�relme MUTE bekapcsol�sra
+		case m_mute_on : // 'u' - A PC k�relme MUTE bekapcsolósra
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();						// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();						// üzenet kezelve
 		mute_be();
 		putch(STX);
 		putch(ACK);
@@ -5111,11 +4950,11 @@ while(1)
 		}
 		break;
 
-		case m_mute_off : // 'U' A PC k�relme MUTE kikapcsol�sra
+		case m_mute_off : // 'U' A PC k�relme MUTE kikapcsolósra
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();						// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();						// üzenet kezelve
 		mute_ki();
 		putch(STX);
 		putch(ACK);
@@ -5123,11 +4962,11 @@ while(1)
 		}
 		break;
 
-		case m_test_on : // 'X' - A PC jelzi, hogy Teszt m�dba l�pett
+		case m_test_on : // 'X' - A PC jelzi, hogy Teszt módba lépett
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();						// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();						// üzenet kezelve
 		TVbits.PC_Test_Mode = 1;
 		putch(STX);
 		putch(ACK);
@@ -5135,11 +4974,11 @@ while(1)
 		}
 		break;
 	
-		case m_test_off : // 'x' - A PC jelzi, hogy kil�pett a TESZT m�db�l
+		case m_test_off : // 'x' - A PC jelzi, hogy kilépett a TESZT módb�l
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();						// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();						// üzenet kezelve
 		TVbits.PC_Test_Mode = 0;
 		putch(STX);
 		putch(ACK);
@@ -5147,19 +4986,19 @@ while(1)
 		}
 		break;
 
-		case m_booking_send : // 'Z' - A PC r�vid sz�ml�l� null�z�si (z�r�si) k�relmet �s a mai d�tumot k�ldi
-				{					// A HW a k�vetkez� szabad z�r�si cimre kiirja az adatot.
+		case m_booking_send : // 'Z' - A PC rövid számláló null�z�si (zárási) k�relmet és a mai dátumot k�ldi
+				{					// A HW a következő szabad zárási cimre kiirja az adatot.
 				Get_Booking();
-				// a r�vid sz�ml�l�t null�zni, kiirni!
-				// ETX �tl�p�s kezelve a rutinban
+				// a rövid számlálót null�zni, kiirni!
+				// ETX átlépés kezelve a rutinban
 				}
 				break;
 
-		case m_booking_rq : // 'z' - A PC null�z�si (z�r�si) adatokat k�r
+		case m_booking_rq : // 'z' - A PC null�z�si (zárási) adatokat k�r
 			{
 			rxoptr++;						// �tl�pj�k az ETX-et
-			rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-			Dec_RX_Msg();				// �zenet kezelve
+			rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
+			Dec_RX_Msg();				// üzenet kezelve
 			Send_Booking();
 			}	// end of send booking
 		break;
@@ -5167,33 +5006,33 @@ while(1)
 		case ACK : // a PC norm�l nyugt�t k�ld�tt
 		{
 		rxoptr++;						// �tl�pj�k az ETX-et
-		rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-		Dec_RX_Msg();					// �zenet kezelve
+		rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
+		Dec_RX_Msg();					// üzenet kezelve
 		}
 		break;
 
 		case NAK : // a PC negativ nyugt�t k�ld�tt
 		{
 		rxoptr++;						// �tl�pj�k az ETX-et
-		rxoptr &= SER_FIFO_MASK;		// k�rbefordul�s kezel�se
-		Dec_RX_Msg();					// �zenet kezelve
+		rxoptr &= SER_FIFO_MASK;		// körbefordulás kezelése
+		Dec_RX_Msg();					// üzenet kezelve
 		}
 		break;
 
-		case m_counter_reset: // 'n'k�r�s sz�ml�l�k null�z�s�ra
+		case m_counter_reset: // 'n'kérés számlálók null�z�s�ra
 				{
 				Counter_Reset();
-				// a r�vid sz�ml�l�t null�zni, kiirni!
+				// a rövid számlálót null�zni, kiirni!
 				}
 				break;
 
 
 
-		case m_remote_credit : // '#' - T�vvez�rl�vel beadtott kredit
+		case m_remote_credit : // '#' - Távvezérlővel beadtott kredit
 		{
-		rxoptr++;							// ETX �tl�p�se
-		rxoptr &= SER_FIFO_MASK;			// k�rbefordul�s kezel�se
-		Dec_RX_Msg();					// �zenet kezelve
+		rxoptr++;							// ETX átlépése
+		rxoptr &= SER_FIFO_MASK;			// körbefordulás kezelése
+		Dec_RX_Msg();					// üzenet kezelve
 		beep(ok);
 		putch(STX);
 		putch(ACK);
@@ -5204,33 +5043,33 @@ while(1)
 
 
 
-		case m_shutdown : // 'Q' - A PC elfogadta a kikapcsol�si k�relmet
+		case m_shutdown : // 'Q' - A PC elfogadta a kikapcsolósi k�relmet
 		{
-		Proc_Shutdown();		// kiirjuk a krediteket �s a hanger�t, ut�na kikapcs
+		Proc_Shutdown();		// kiirjuk a krediteket és a hanger�t, utána kikapcs
 		asm("nop");
 		asm("nop");
 		asm("nop");
 		asm("BCF _PCLATH,4");
 		asm("BCF _PCLATH,3");
-		asm("GOTO 0x0000");		// restart, a HW �jraindul
+		asm("GOTO 0x0000");		// restart, a HW újraindul
 		}
 		break;
 
 
 
 
-	 	default:   							// a m�shol fel nem dolgozott �zenetek
+	 	default:   							// a m�shol fel nem dolgozott üzenetek
  		{								 
 			while (rxfifo[rxoptr] != ETX)	
 				{
 				 rxoptr++;
-				 rxoptr &= SER_FIFO_MASK;		// megkeress�k az �zenet v�g�t
+				 rxoptr &= SER_FIFO_MASK;		// megkeress�k az üzenet v�g�t
 				}		
 				 rxoptr++;
-				 rxoptr &= SER_FIFO_MASK;		// ETX �tl�p�se
-				Dec_RX_Msg();					// �zenet kezelve
+				 rxoptr &= SER_FIFO_MASK;		// ETX átlépése
+				Dec_RX_Msg();					// üzenet kezelve
   
-			putch(STX);				// nem �rtelmezett �zenet
+			putch(STX);				// nem �rtelmezett üzenet
 			putch(NAK);
 			putch(ETX);
 
@@ -5238,19 +5077,19 @@ while(1)
 		break;
 	} // end of switch
 
-		if(ForcedMuteOff)		// ha szakadt �zenet j�tt be, a mute-t kikapcsoljuk
+		if(ForcedMuteOff)		// ha szakadt üzenet j�tt be, a mute-t kikapcsoljuk
 			{
 			mute_ki();
 			ForcedMuteOff = 0;
 			}
 		
 
-		if(rxiptr < rxoptr)	// v�rjuk, hogy elromlik-e a mutat�
+		if(rxiptr < rxoptr)	// várjuk, hogy elromlik-e a mutat�
 			{
 			s1 = s2;
 			}
 
-//		SFbits.RX_Msg = 0;	// �zenet kezelve, �zenetjelz� bit t�rl�se
+//		SFbits.RX_Msg = 0;	// üzenet kezelve, üzenetjelz� bit törlése
 //		rxiptr = 0;				// soros v�teli puffer mutat� alaphelyzetbe
 		} // end of MessageHandler if
 
@@ -5293,8 +5132,8 @@ while(1)
 
 		banksel	_PORTC			; RCREG
 DCStart:
-		call	GetByte			// v�runk egy karaktert a soros porton
-		movlw	':'			// kett�spontot v�runk, ha nem az j�n, v�r a ciklus
+		call	GetByte			// várunk egy karaktert a soros porton
+		movlw	':'			// kett�spontot várunk, ha nem az jön, v�r a ciklus
 		subwf	_PORTC,w
 		nop
 		nop
@@ -5310,12 +5149,12 @@ DCStart:
 //		bcf	STATUS,C
 		bcf	CARRY
 //		btfss	ZERO
-		rrf	_bnum,f			// felezz�k, ennyi sz�t (word) fogunk venni
+		rrf	_bnum,f			// felezzük, ennyi sz�t (word) fogunk venni
 
-		call	GetHex8				// A 16 bites c�m fels� b�jtja
+		call	GetHex8				// A 16 bites cím felső b�jtja
 		movwf	_AddrH
 		addwf	_local_CLC,f	// minden megy a checksum-ba is
-		call	GetHex8				// A 16 bites c�m als� b�jtja
+		call	GetHex8				// A 16 bites cím als� b�jtja
 		movwf	_AddrL
 		addwf	_local_CLC,f	// ez is a checksumba
 
@@ -5324,20 +5163,20 @@ DCStart:
 		addwf	_local_CLC,f	// checksum
 
 DataRec:							// adatok v�tele
-		movf	_RecType,f		// adatrekord ellen�rz�s  (0h a j� �rt�k)
+		movf	_RecType,f		// adatrekord ellenőrzős  (0h a j� érték)
 //		btfss	STATUS,Z
 		btfss	ZERO
-		goto		EndOfFileRec			// ha nem 0, akkor EOF ellen�rz�s (01h)
+		goto		EndOfFileRec			// ha nem 0, akkor EOF ellenőrzős (01h)
 
 DRLoop:	
-		movf	_bnum,f		// bytecount = 0 ? akkor nem j�n t�bb adat
+		movf	_bnum,f		// bytecount = 0 ? akkor nem jön több adat
 //		btfsc		_STATUS,Z
 		btfsc		ZERO
-		goto		DRCkChecksum		// ha 0, akkor checksum ellen�rz�s
+		goto		DRCkChecksum		// ha 0, akkor checksum ellenőrzős
 		call		GetHex8				// adat als� byte-ja, 2 ASCII karakter
 		movwf	_HexDataL		// checksumba
 		addwf	_local_CLC,f
-		call		GetHex8				// adat fels� b�jtja, 2 ASCII karakter
+		call		GetHex8				// adat felső b�jtja, 2 ASCII karakter
 		movwf	_HexDataH		// checksumba
 		addwf	_local_CLC,f
 
