@@ -1,7 +1,7 @@
 # Detonator
 
 ## Zenegép
-PC-alapú internetes zenegép. (2004.-től fejlesztve, 2018-tól "internetesítve", már nem élő projekt.). A PC-n Delphi nyelven írt program fut, RS-232 soros porton kommunikál a kiegészítő hardverrel, a zenelejátszás Delphi-ből vezérelt Winamp-pal történik. A zenei szerver-adatbázis MySql-alapú, a Delphi a Lazarus csomag segítségével éri el.
+PC-alapú internetes zenegép. (2004.-től fejlesztve, 2018-tól "internetesítve", működő, de már nem fejlesztett projekt.). A PC-n Delphi nyelven írt program fut, RS-232 soros porton kommunikál a kiegészítő hardverrel, a zenelejátszás Delphi-ből vezérelt Winamp-pal történik. A zenei szerver-adatbázis MySql-alapú, a Delphi a Lazarus csomag segítségével éri el.
 ## Mikrovezérlő
 A kiegészítő hardver végzi a pénzkezelést, a nyomógombok kezelését, és a számítógéptől függetlenül kezeli a számlálókat. Microchip mikrovezérlőt tartalmaz, C-nyelven készült a firmware.
 ## Mobilapplikáció
